@@ -1,0 +1,11 @@
+{
+    "native_syntax_check":  "all 5 C files pass with mocked SDK declarations",
+    "test_results":  [
+                         "PASS: 111 production-code reliability assertions; 431 checkpoint commits; 400 concurrent room transitions",
+                         "PASS: 83 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
+                         "PASS: 83 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)"
+                     ],
+    "native_sanitizers":  "not enabled in this run",
+    "full_esp_idf_build":  "PASS: ESP-IDF v6.0.2 ESP32-S3 build on 2026-10-30, including advance warning and closing-time alarm",
+    "wokwi_run":  "Not run by agent; restart Wokwi to load rebuilt firmware and check both closing alarms"
+}
