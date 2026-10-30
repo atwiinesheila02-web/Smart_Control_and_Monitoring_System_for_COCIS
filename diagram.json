@@ -8,36 +8,28 @@
       "id": "esp",
       "top": -48.18,
       "left": 830.17,
-      "attrs": {
-        "builder": "esp-idf"
-      }
+      "attrs": { "builder": "esp-idf" }
     },
     {
       "type": "wokwi-led",
       "id": "led1",
       "top": 130.8,
       "left": 167,
-      "attrs": {
-        "color": "green"
-      }
+      "attrs": { "color": "green" }
     },
     {
       "type": "wokwi-led",
       "id": "led2",
       "top": 351.6,
       "left": 157.4,
-      "attrs": {
-        "color": "limegreen"
-      }
+      "attrs": { "color": "limegreen" }
     },
     {
       "type": "wokwi-resistor",
       "id": "r1",
       "top": 157.55,
       "left": 220.8,
-      "attrs": {
-        "value": "1000"
-      }
+      "attrs": { "value": "1000" }
     },
     {
       "type": "board-mfrc522",
@@ -76,9 +68,7 @@
       "id": "r2",
       "top": 378.35,
       "left": 211.2,
-      "attrs": {
-        "value": "220"
-      }
+      "attrs": { "value": "220" }
     },
     {
       "type": "wokwi-buzzer",
@@ -86,9 +76,7 @@
       "top": 264.3,
       "left": 256.5,
       "rotate": 270,
-      "attrs": {
-        "volume": "1"
-      }
+      "attrs": { "volume": "1" }
     },
     {
       "type": "wokwi-relay-module",
@@ -103,9 +91,7 @@
       "id": "r3",
       "top": 71.15,
       "left": 1190.4,
-      "attrs": {
-        "value": "220"
-      }
+      "attrs": { "value": "220" }
     },
     {
       "type": "wokwi-resistor",
@@ -113,9 +99,7 @@
       "top": 570.65,
       "left": 1265.8,
       "rotate": 180,
-      "attrs": {
-        "value": "220"
-      }
+      "attrs": { "value": "220" }
     },
     {
       "type": "wokwi-relay-module",
@@ -130,75 +114,51 @@
       "id": "led4",
       "top": 649.2,
       "left": 1127,
-      "attrs": {
-        "color": "yellow"
-      }
+      "attrs": { "color": "yellow" }
     },
     {
       "type": "wokwi-led",
       "id": "led6",
       "top": -61.2,
       "left": 1165.4,
-      "attrs": {
-        "color": "yellow"
-      }
+      "attrs": { "color": "yellow" }
     },
     {
       "type": "wokwi-lcd1602",
       "id": "lcd1",
       "top": -147.2,
       "left": 495.2,
-      "attrs": {
-        "pins": "i2c",
-        "i2cAddress": "0x27"
-      }
+      "attrs": { "pins": "i2c", "i2cAddress": "0x27" }
     },
     {
       "type": "wokwi-lcd1602",
       "id": "lcd2",
       "top": 476.8,
       "left": 485.6,
-      "attrs": {
-        "pins": "i2c",
-        "i2cAddress": "0x26"
-      }
+      "attrs": { "pins": "i2c", "i2cAddress": "0x26" }
     },
     {
       "type": "wokwi-lcd1602",
       "id": "lcd4",
       "top": 390.4,
       "left": 1128.8,
-      "attrs": {
-        "pins": "i2c",
-        "i2cAddress": "0x24"
-      }
+      "attrs": { "pins": "i2c", "i2cAddress": "0x24" }
     },
     {
       "type": "wokwi-lcd1602",
       "id": "lcd6",
       "top": -320,
       "left": 1042.4,
-      "attrs": {
-        "pins": "i2c",
-        "i2cAddress": "0x25"
-      }
+      "attrs": { "pins": "i2c", "i2cAddress": "0x25" }
     },
-    {
-      "type": "wokwi-microsd-card",
-      "id": "sd1",
-      "top": 653.03,
-      "left": 652.87,
-      "attrs": {}
-    },
+    { "type": "wokwi-microsd-card", "id": "sd1", "top": 653.03, "left": 652.87, "attrs": {} },
     {
       "type": "wokwi-ds1307",
       "id": "rtc1",
       "top": 772.9,
       "left": 650,
       "rotate": 180,
-      "attrs": {
-        "initTime": "now"
-      }
+      "attrs": { "initTime": "now" }
     },
     {
       "type": "wokwi-pir-motion-sensor",
@@ -206,9 +166,7 @@
       "top": -132.68,
       "left": 1056.5,
       "rotate": 90,
-      "attrs": {
-        "delayTime": "2"
-      }
+      "attrs": { "delayTime": "2" }
     },
     {
       "type": "wokwi-pir-motion-sensor",
@@ -216,9 +174,7 @@
       "top": -36.68,
       "left": 1056.5,
       "rotate": 90,
-      "attrs": {
-        "delayTime": "2"
-      }
+      "attrs": { "delayTime": "2" }
     },
     {
       "type": "wokwi-pir-motion-sensor",
@@ -226,9 +182,7 @@
       "top": 500.92,
       "left": 1008.5,
       "rotate": 90,
-      "attrs": {
-        "delayTime": "2"
-      }
+      "attrs": { "delayTime": "2" }
     },
     {
       "type": "wokwi-pir-motion-sensor",
@@ -236,9 +190,7 @@
       "top": 608.8,
       "left": 1010.22,
       "rotate": 90,
-      "attrs": {
-        "delayTime": "2"
-      }
+      "attrs": { "delayTime": "2" }
     },
     {
       "type": "wokwi-photoresistor-sensor",
@@ -246,9 +198,7 @@
       "top": -390.6,
       "left": 1044.4,
       "rotate": 180,
-      "attrs": {
-        "lux": "500"
-      }
+      "attrs": { "lux": "500" }
     },
     {
       "type": "wokwi-photoresistor-sensor",
@@ -256,9 +206,7 @@
       "top": 780.8,
       "left": 1335.2,
       "rotate": 180,
-      "attrs": {
-        "lux": "500"
-      }
+      "attrs": { "lux": "500" }
     },
     {
       "type": "wokwi-membrane-keypad",
@@ -267,24 +215,7 @@
       "left": 188,
       "attrs": {
         "columns": "4",
-        "keys": [
-          "1",
-          "2",
-          "3",
-          "A",
-          "4",
-          "5",
-          "6",
-          "B",
-          "7",
-          "8",
-          "9",
-          "C",
-          "*",
-          "0",
-          "#",
-          "D"
-        ]
+        "keys": [ "1", "2", "3", "A", "4", "5", "6", "B", "7", "8", "9", "C", "*", "0", "#", "D" ]
       }
     },
     {
@@ -292,1315 +223,297 @@
       "id": "emergency_btn",
       "top": 690,
       "left": 60,
-      "attrs": {
-        "color": "red",
-        "label": "EMERGENCY EXIT",
-        "bounce": "0"
-      }
+      "attrs": { "color": "red", "label": "EMERGENCY EXIT", "bounce": "0" }
     },
     {
       "type": "wokwi-slide-switch",
       "id": "smoke_alarm_sim",
       "top": 710,
       "left": 340,
-      "attrs": {
-        "value": "",
-        "bounce": "0"
-      }
+      "attrs": { "value": "", "bounce": "0" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "passage_entry_beam",
       "top": 70,
       "left": -140,
-      "attrs": {
-        "color": "blue",
-        "label": "ENTRY PASSAGE",
-        "bounce": "0"
-      }
+      "attrs": { "color": "blue", "label": "ENTRY PASSAGE", "bounce": "0" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "passage_exit_beam",
       "top": 340,
       "left": -140,
-      "attrs": {
-        "color": "blue",
-        "label": "EXIT PASSAGE",
-        "bounce": "0"
-      }
+      "attrs": { "color": "blue", "label": "EXIT PASSAGE", "bounce": "0" }
     },
     {
       "type": "wokwi-text",
       "id": "title",
       "top": -540,
       "left": 180,
-      "attrs": {
-        "text": "SMARTGUARD | ACCESS, ROOM MONITORING & EMERGENCY"
-      }
+      "attrs": { "text": "SMARTGUARD | ACCESS, ROOM MONITORING & EMERGENCY" }
     },
     {
       "type": "wokwi-text",
       "id": "entry_label",
       "top": -280,
       "left": 420,
-      "attrs": {
-        "text": "ENTRANCE | RFID + door + verified passage"
-      }
+      "attrs": { "text": "ENTRANCE | RFID + door + verified passage" }
     },
     {
       "type": "wokwi-text",
       "id": "entry_passage_label",
-      "top": -20,
-      "left": -210,
-      "attrs": {
-        "text": "ENTRY SENSOR SIMULATOR\nGPIO19 | hold, then release\nafter entry card approval"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "exit_label",
-      "top": 590,
-      "left": 140,
-      "attrs": {
-        "text": "EXIT | RFID + door + verified passage"
-      }
+      "top": -19.2,
+      "left": -201.6,
+      "attrs": { "text": "ENTRY SENSOR SIMULATOR\nhold, then release\nafter entry card approval" }
     },
     {
       "type": "wokwi-text",
       "id": "exit_passage_label",
-      "top": 250,
-      "left": -210,
-      "attrs": {
-        "text": "EXIT SENSOR SIMULATOR\nGPIO20 | hold, then release\nafter exit card approval"
-      }
+      "top": 249.6,
+      "left": -211.2,
+      "attrs": { "text": "EXIT SENSOR SIMULATOR\nhold, then release\nafter exit card approval" }
     },
     {
       "type": "wokwi-text",
       "id": "room1_label",
       "top": -470,
       "left": 1030,
-      "attrs": {
-        "text": "ROOM 1 | occupancy + automatic lighting"
-      }
+      "attrs": { "text": "ROOM 1 | occupancy + automatic lighting" }
     },
     {
       "type": "wokwi-text",
       "id": "room2_label",
       "top": 320,
       "left": 1110,
-      "attrs": {
-        "text": "ROOM 2 | occupancy + automatic lighting"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "emergency_label",
-      "top": 630,
-      "left": 30,
-      "attrs": {
-        "text": "EMERGENCY CONTROLS | independent of opening hours"
-      }
+      "attrs": { "text": "ROOM 2 | occupancy + automatic lighting" }
     },
     {
       "type": "wokwi-text",
       "id": "button_label",
-      "top": 800,
-      "left": 0,
-      "attrs": {
-        "text": "GPIO21 | press to evacuate"
-      }
+      "top": 662.4,
+      "left": 9.6,
+      "attrs": { "text": "press to evacuate" }
     },
     {
       "type": "wokwi-text",
       "id": "smoke_label",
-      "top": 800,
-      "left": 300,
-      "attrs": {
-        "text": "SMOKE ALARM SIMULATOR | GPIO42\nLEFT = clear | RIGHT = smoke alarm"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "storage_label",
-      "top": 900,
-      "left": 620,
-      "attrs": {
-        "text": "SD LOGS + BACKUP CLOCK"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "legend",
-      "top": 1060,
-      "left": 130,
-      "attrs": {
-        "text": "WIRES: red = power | black = ground\ncyan = I2C | orange = analog/button\nblue = passage | purple = smoke\nGPIO19/20: UART0 console, no native USB"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_esp",
-      "top": -90,
-      "left": 780,
-      "attrs": {
-        "text": "ESP32-S3 CONTROLLER"
-      }
+      "top": 662.4,
+      "left": 278.4,
+      "attrs": { "text": "SMOKE ALARM SIMULATOR\nLEFT = clear | RIGHT = smoke alarm" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_kp1",
       "top": -250,
       "left": 160,
-      "attrs": {
-        "text": "ADMIN KEYPAD"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_lcd1",
-      "top": -180,
-      "left": 495,
-      "attrs": {
-        "text": "ENTRY DISPLAY | 0x27"
-      }
+      "attrs": { "text": "ADMIN KEYPAD" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_rfid1",
-      "top": 95,
-      "left": 480,
-      "attrs": {
-        "text": "ENTRY CARD READER | GPIO10"
-      }
+      "top": -9.6,
+      "left": 547.2,
+      "attrs": { "text": "ENTRY CARD READER" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_servo2",
-      "top": 205,
-      "left": 80,
-      "attrs": {
-        "text": "ENTRY DOOR SERVO | GPIO4"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_led1",
-      "top": 100,
-      "left": 120,
-      "attrs": {
-        "text": "ENTRY LED | GPIO16"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_r1",
-      "top": 160,
-      "left": 300,
-      "attrs": {
-        "text": "ENTRY LED RESISTOR | 1k ohm"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_bz1",
-      "top": 285,
-      "left": 330,
-      "attrs": {
-        "text": "ALARM BUZZER | GPIO18"
-      }
+      "top": 268.8,
+      "left": 115.2,
+      "attrs": { "text": "ENTRY DOOR SERVO" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_rfid2",
-      "top": 325,
-      "left": 470,
-      "attrs": {
-        "text": "EXIT CARD READER | GPIO9"
-      }
+      "top": 220.8,
+      "left": 547.2,
+      "attrs": { "text": "EXIT CARD READER" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_servo1",
-      "top": 435,
-      "left": 60,
-      "attrs": {
-        "text": "EXIT DOOR SERVO | GPIO5"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_led2",
-      "top": 320,
-      "left": 100,
-      "attrs": {
-        "text": "EXIT LED | GPIO17"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_r2",
-      "top": 395,
-      "left": 290,
-      "attrs": {
-        "text": "EXIT LED RESISTOR | 220 ohm"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_lcd2",
-      "top": 555,
-      "left": 490,
-      "attrs": {
-        "text": "EXIT DISPLAY | 0x26"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_lcd6",
-      "top": -345,
-      "left": 1050,
-      "attrs": {
-        "text": "ROOM 1 DISPLAY | 0x25"
-      }
+      "top": 499.2,
+      "left": 124.8,
+      "attrs": { "text": "EXIT DOOR SERVO " }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_ldr1",
-      "top": -420,
-      "left": 1030,
-      "attrs": {
-        "text": "ROOM 1 LIGHT SENSOR | GPIO2"
-      }
+      "top": -422.4,
+      "left": 1027.2,
+      "attrs": { "text": "LIGHT SENSOR " }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_pir1a",
-      "top": -150,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 1 OUTER PIR | GPIO1"
-      }
+      "top": -153.6,
+      "left": 1065.6,
+      "attrs": { "text": "OUTER PIR" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_pir1b",
-      "top": -35,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 1 INNER PIR | GPIO15"
-      }
+      "top": 67.2,
+      "left": 1075.2,
+      "attrs": { "text": " INNER PIR" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_relay2",
-      "top": -100,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 1 LIGHT RELAY | GPIO14"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_led6",
-      "top": 25,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 1 LAMP (yellow LED)"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_r3",
-      "top": 90,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 1 LAMP RESISTOR | 220 ohm"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_lcd4",
-      "top": 365,
-      "left": 1130,
-      "attrs": {
-        "text": "ROOM 2 DISPLAY | 0x24"
-      }
+      "top": -67.2,
+      "left": 1305.6,
+      "attrs": { "text": "LIGHT RELAY " }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_pir2a",
-      "top": 495,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 2 OUTER PIR | GPIO41"
-      }
+      "top": 489.6,
+      "left": 1027.2,
+      "attrs": { "text": "OUTER PIR" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_pir2b",
-      "top": 610,
-      "left": 1370,
-      "attrs": {
-        "text": "ROOM 2 INNER PIR | GPIO47"
-      }
+      "top": 691.2,
+      "left": 1027.2,
+      "attrs": { "text": "INNER PIR " }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_relay1",
-      "top": 710,
-      "left": 1510,
-      "attrs": {
-        "text": "ROOM 2 LIGHT RELAY | GPIO38"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_led4",
-      "top": 675,
-      "left": 1510,
-      "attrs": {
-        "text": "ROOM 2 LAMP (yellow LED)"
-      }
-    },
-    {
-      "type": "wokwi-text",
-      "id": "device_label_r4",
-      "top": 565,
-      "left": 1510,
-      "attrs": {
-        "text": "ROOM 2 LAMP RESISTOR | 220 ohm"
-      }
+      "top": 700.8,
+      "left": 1305.6,
+      "attrs": { "text": "LIGHT RELAY" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_ldr2",
-      "top": 855,
-      "left": 1280,
-      "attrs": {
-        "text": "ROOM 2 LIGHT SENSOR | GPIO3"
-      }
+      "top": 844.8,
+      "left": 1372.8,
+      "attrs": { "text": "LIGHT SENSOR" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_sd1",
-      "top": 620,
-      "left": 630,
-      "attrs": {
-        "text": "MICRO SD | access and system logs\nCS6 | MOSI11 | MISO13 | SCK12"
-      }
+      "top": 729.6,
+      "left": 652.8,
+      "attrs": { "text": "MICRO SD\n" }
     },
     {
       "type": "wokwi-text",
       "id": "device_label_rtc1",
-      "top": 850,
-      "left": 640,
-      "attrs": {
-        "text": "DS1307 REAL-TIME CLOCK\nSDA39 | SCL40 | address 0x68"
-      }
+      "top": 854.4,
+      "left": 614.4,
+      "attrs": { "text": "DS1307 REAL-TIME CLOCK\n" }
     }
   ],
   "connections": [
-    [
-      "esp:TX",
-      "$serialMonitor:RX",
-      "green",
-      []
-    ],
-    [
-      "esp:RX",
-      "$serialMonitor:TX",
-      "green",
-      []
-    ],
-    [
-      "rfid1:3.3V",
-      "esp:3V3.1",
-      "red",
-      []
-    ],
-    [
-      "rfid1:GND",
-      "esp:GND.1",
-      "black",
-      []
-    ],
-    [
-      "rfid1:RST",
-      "esp:7",
-      "green",
-      []
-    ],
-    [
-      "rfid1:MISO",
-      "esp:13",
-      "green",
-      []
-    ],
-    [
-      "rfid1:SDA",
-      "esp:10",
-      "green",
-      []
-    ],
-    [
-      "rfid1:MOSI",
-      "esp:11",
-      "green",
-      []
-    ],
-    [
-      "rfid1:SCK",
-      "esp:12",
-      "green",
-      []
-    ],
-    [
-      "rfid2:3.3V",
-      "esp:3V3.1",
-      "red",
-      [
-        "h86.45"
-      ]
-    ],
-    [
-      "rfid2:RST",
-      "esp:7",
-      "green",
-      []
-    ],
-    [
-      "rfid2:GND",
-      "esp:GND.1",
-      "black",
-      [
-        "h48",
-        "v-105.6"
-      ]
-    ],
-    [
-      "rfid2:MISO",
-      "esp:13",
-      "green",
-      [
-        "h48",
-        "v-153.6"
-      ]
-    ],
-    [
-      "rfid2:MOSI",
-      "esp:11",
-      "green",
-      [
-        "h48",
-        "v-182.4"
-      ]
-    ],
-    [
-      "rfid2:SCK",
-      "esp:12",
-      "green",
-      [
-        "h48",
-        "v-182.4"
-      ]
-    ],
-    [
-      "rfid2:SDA",
-      "esp:9",
-      "green",
-      [
-        "h48",
-        "v-220.8"
-      ]
-    ],
-    [
-      "servo1:GND",
-      "esp:GND.1",
-      "black",
-      [
-        "h489.6",
-        "v-268.8"
-      ]
-    ],
-    [
-      "servo2:GND",
-      "esp:GND.1",
-      "black",
-      []
-    ],
-    [
-      "servo2:V+",
-      "esp:5V",
-      "red",
-      [
-        "v-0.1",
-        "h508.8",
-        "v-38.4"
-      ]
-    ],
-    [
-      "servo1:V+",
-      "esp:5V",
-      "red",
-      [
-        "h489.6",
-        "v-268.9"
-      ]
-    ],
-    [
-      "servo2:PWM",
-      "esp:4",
-      "green",
-      []
-    ],
-    [
-      "servo1:PWM",
-      "esp:5",
-      "green",
-      []
-    ],
-    [
-      "led2:C",
-      "esp:GND.4",
-      "black",
-      [
-        "v9.6",
-        "h768.4",
-        "v-220.8"
-      ]
-    ],
-    [
-      "led1:C",
-      "esp:GND.4",
-      "black",
-      [
-        "v9.6",
-        "h739.6"
-      ]
-    ],
-    [
-      "led2:A",
-      "r2:1",
-      "green",
-      []
-    ],
-    [
-      "led1:A",
-      "r1:1",
-      "green",
-      []
-    ],
-    [
-      "r2:2",
-      "esp:17",
-      "green",
-      []
-    ],
-    [
-      "r1:2",
-      "esp:16",
-      "green",
-      []
-    ],
-    [
-      "bz1:1",
-      "esp:GND.4",
-      "black",
-      [
-        "v67.2",
-        "h604.8",
-        "v-201.6"
-      ]
-    ],
-    [
-      "bz1:2",
-      "esp:18",
-      "green",
-      [
-        "h28.8",
-        "v77.2",
-        "h470.45"
-      ]
-    ],
-    [
-      "relay2:VCC",
-      "esp:5V",
-      "red",
-      [
-        "v-28.8",
-        "h-460.8",
-        "v326.4"
-      ]
-    ],
-    [
-      "relay1:VCC",
-      "esp:5V",
-      "red",
-      [
-        "v-19.2",
-        "h-86.4",
-        "v153.6",
-        "h-623.95"
-      ]
-    ],
-    [
-      "relay2:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "v-28.8",
-        "h-316.4",
-        "v326.4"
-      ]
-    ],
-    [
-      "relay2:IN",
-      "esp:14",
-      "green",
-      [
-        "v-28.8",
-        "h-441.4",
-        "v316.8"
-      ]
-    ],
-    [
-      "relay1:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "v-9.6",
-        "h-66.8",
-        "v144",
-        "h-268.8",
-        "v-585.6"
-      ]
-    ],
-    [
-      "relay1:COM",
-      "esp:5V",
-      "red",
-      [
-        "v39.6",
-        "h-459.35"
-      ]
-    ],
-    [
-      "relay2:COM",
-      "esp:5V",
-      "red",
-      [
-        "v68.4",
-        "h-507.35"
-      ]
-    ],
-    [
-      "relay2:NO",
-      "r3:2",
-      "green",
-      [
-        "v87.6",
-        "h-35.4"
-      ]
-    ],
-    [
-      "relay1:NO",
-      "r4:1",
-      "green",
-      [
-        "v30",
-        "h78.6",
-        "v-192"
-      ]
-    ],
-    [
-      "r4:2",
-      "led4:A",
-      "green",
-      [
-        "h-94.8",
-        "v115.2"
-      ]
-    ],
-    [
-      "led4:C",
-      "esp:GND.3",
-      "black",
-      [
-        "v19.2",
-        "h-201.2",
-        "v-537.6"
-      ]
-    ],
-    [
-      "led6:A",
-      "r3:1",
-      "green",
-      []
-    ],
-    [
-      "led6:C",
-      "esp:GND.3",
-      "black",
-      [
-        "v86.4",
-        "h-335.6"
-      ]
-    ],
-    [
-      "relay1:IN",
-      "esp:38",
-      "green",
-      [
-        "h-38.2",
-        "v134.4",
-        "h-288",
-        "v-691.2"
-      ]
-    ],
-    [
-      "lcd1:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-9.6",
-        "v-86.4",
-        "h460.8",
-        "v374.4"
-      ]
-    ],
-    [
-      "lcd1:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-19.2",
-        "v-67.1",
-        "h336",
-        "v345.6"
-      ]
-    ],
-    [
-      "lcd1:SDA",
-      "esp:39",
-      "cyan",
-      [
-        "h-28.8",
-        "v-76.6",
-        "h480",
-        "v230.4"
-      ]
-    ],
-    [
-      "lcd1:SCL",
-      "esp:40",
-      "cyan",
-      [
-        "h-38.4",
-        "v-86.1",
-        "h489.6",
-        "v220.8"
-      ]
-    ],
-    [
-      "lcd6:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-96",
-        "v460.8"
-      ]
-    ],
-    [
-      "lcd6:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-230.4",
-        "v451.3"
-      ]
-    ],
-    [
-      "lcd6:SDA",
-      "esp:39",
-      "cyan",
-      [
-        "h-96",
-        "v326.6"
-      ]
-    ],
-    [
-      "lcd6:SCL",
-      "esp:40",
-      "cyan",
-      [
-        "h-96",
-        "v307.5"
-      ]
-    ],
-    [
-      "lcd2:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-19.2",
-        "v-38.4",
-        "h470.4",
-        "v-297.6"
-      ]
-    ],
-    [
-      "lcd2:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-28.8",
-        "v-57.5",
-        "h326.4",
-        "v-288"
-      ]
-    ],
-    [
-      "lcd2:SDA",
-      "esp:39",
-      "cyan",
-      [
-        "h-28.8",
-        "v105.8",
-        "h480",
-        "v-576"
-      ]
-    ],
-    [
-      "lcd2:SCL",
-      "esp:40",
-      "cyan",
-      [
-        "h-19.2",
-        "v86.7",
-        "h470.4",
-        "v-576"
-      ]
-    ],
-    [
-      "lcd4:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-192",
-        "v-249.6"
-      ]
-    ],
-    [
-      "lcd4:VCC",
-      "esp:5V",
-      "red",
-      []
-    ],
-    [
-      "lcd4:SDA",
-      "esp:39",
-      "cyan",
-      [
-        "h-192",
-        "v-383.8"
-      ]
-    ],
-    [
-      "lcd4:SCL",
-      "esp:40",
-      "cyan",
-      [
-        "h-192",
-        "v-402.9"
-      ]
-    ],
-    [
-      "sd1:VCC",
-      "esp:3V3.1",
-      "red",
-      []
-    ],
-    [
-      "sd1:GND",
-      "esp:GND.1",
-      "black",
-      []
-    ],
-    [
-      "sd1:CS",
-      "esp:6",
-      "green",
-      []
-    ],
-    [
-      "sd1:DI",
-      "esp:11",
-      "green",
-      []
-    ],
-    [
-      "sd1:DO",
-      "esp:13",
-      "green",
-      []
-    ],
-    [
-      "sd1:SCK",
-      "esp:12",
-      "green",
-      []
-    ],
-    [
-      "rtc1:5V",
-      "esp:5V",
-      "red",
-      []
-    ],
-    [
-      "rtc1:GND",
-      "esp:GND.1",
-      "black",
-      []
-    ],
-    [
-      "rtc1:SDA",
-      "esp:39",
-      "cyan",
-      [
-        "h202.3",
-        "v-764.8"
-      ]
-    ],
-    [
-      "rtc1:SCL",
-      "esp:40",
-      "cyan",
-      [
-        "h211.9",
-        "v-774.4"
-      ]
-    ],
-    [
-      "pir1a:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-249.6",
-        "v268.8"
-      ]
-    ],
-    [
-      "pir1a:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-76.8",
-        "v249.34"
-      ]
-    ],
-    [
-      "pir1a:OUT",
-      "esp:1",
-      "green",
-      [
-        "h-115.2",
-        "v95.86"
-      ]
-    ],
-    [
-      "pir1b:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-57.6",
-        "v278.4",
-        "h-192",
-        "v-105.6"
-      ]
-    ],
-    [
-      "pir1b:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-76.8",
-        "v153.34"
-      ]
-    ],
-    [
-      "pir1b:OUT",
-      "esp:15",
-      "green",
-      [
-        "h-19.2",
-        "v-67.34",
-        "h-220.8",
-        "v105.6"
-      ]
-    ],
-    [
-      "pir2a:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-201.6",
-        "v-364.8"
-      ]
-    ],
-    [
-      "pir2a:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-28.8",
-        "v-384.26"
-      ]
-    ],
-    [
-      "pir2a:OUT",
-      "esp:41",
-      "green",
-      [
-        "h-67.2",
-        "v-508.94"
-      ]
-    ],
-    [
-      "pir2b:VCC",
-      "esp:5V",
-      "red",
-      [
-        "h-203.32",
-        "v-472.68"
-      ]
-    ],
-    [
-      "pir2b:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-30.52",
-        "v-492.14"
-      ]
-    ],
-    [
-      "pir2b:OUT",
-      "esp:47",
-      "green",
-      [
-        "h-68.92",
-        "v-520.82"
-      ]
-    ],
-    [
-      "ldr1:VCC",
-      "esp:3V3.1",
-      "red",
-      [
-        "h-240",
-        "v326.4"
-      ]
-    ],
-    [
-      "ldr1:GND",
-      "esp:GND.3",
-      "black",
-      []
-    ],
-    [
-      "ldr1:AO",
-      "esp:2",
-      "orange",
-      [
-        "h-86.4",
-        "v394.3"
-      ]
-    ],
-    [
-      "ldr2:VCC",
-      "esp:3V3.1",
-      "red",
-      [
-        "h-530.8",
-        "v-845"
-      ]
-    ],
-    [
-      "ldr2:GND",
-      "esp:GND.3",
-      "black",
-      [
-        "h-358",
-        "v-643"
-      ]
-    ],
-    [
-      "ldr2:AO",
-      "esp:3",
-      "orange",
-      [
-        "h-511.6",
-        "v-700.3"
-      ]
-    ],
-    [
-      "kp1:R1",
-      "esp:8",
-      "green",
-      [
-        "v28.8",
-        "h748.85"
-      ]
-    ],
-    [
-      "kp1:R2",
-      "esp:35",
-      "green",
-      [
-        "v28.8",
-        "h825.2"
-      ]
-    ],
-    [
-      "kp1:R3",
-      "esp:36",
-      "green",
-      [
-        "v28.8",
-        "h815.7"
-      ]
-    ],
-    [
-      "kp1:R4",
-      "esp:37",
-      "green",
-      [
-        "v28.8",
-        "h806.2"
-      ]
-    ],
-    [
-      "kp1:C1",
-      "esp:45",
-      "green",
-      [
-        "v28.8",
-        "h796.7"
-      ]
-    ],
-    [
-      "kp1:C2",
-      "esp:46",
-      "green",
-      [
-        "v28.8",
-        "h700.85"
-      ]
-    ],
-    [
-      "kp1:C3",
-      "esp:48",
-      "green",
-      [
-        "v28.8",
-        "h777.45"
-      ]
-    ],
-    [
-      "kp1:C4",
-      "esp:0",
-      "green",
-      [
-        "v28.8",
-        "h767.7"
-      ]
-    ],
-    [
-      "emergency_btn:1.l",
-      "esp:21",
-      "orange",
-      [
-        "v260",
-        "h750"
-      ]
-    ],
-    [
-      "emergency_btn:2.l",
-      "esp:GND.1",
-      "black",
-      [
-        "v280",
-        "h770"
-      ]
-    ],
-    [
-      "smoke_alarm_sim:2",
-      "esp:42",
-      "purple",
-      [
-        "v310",
-        "h530"
-      ]
-    ],
-    [
-      "smoke_alarm_sim:1",
-      "esp:GND.1",
-      "black",
-      [
-        "v310",
-        "h530"
-      ]
-    ],
-    [
-      "smoke_alarm_sim:3",
-      "esp:3V3.1",
-      "red",
-      [
-        "v310",
-        "h530"
-      ]
-    ],
-    [
-      "passage_entry_beam:1.l",
-      "esp:19",
-      "blue",
-      [
-        "h-70",
-        "v-560",
-        "h1040"
-      ]
-    ],
-    [
-      "passage_entry_beam:2.l",
-      "esp:GND.1",
-      "black",
-      [
-        "h-90",
-        "v-580",
-        "h1080"
-      ]
-    ],
-    [
-      "passage_exit_beam:1.l",
-      "esp:20",
-      "blue",
-      [
-        "h-110",
-        "v600",
-        "h1110"
-      ]
-    ],
-    [
-      "passage_exit_beam:2.l",
-      "esp:GND.1",
-      "black",
-      [
-        "h-130",
-        "v620",
-        "h1150"
-      ]
-    ]
+    [ "esp:TX", "$serialMonitor:RX", "green", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "green", [] ],
+    [ "rfid1:3.3V", "esp:3V3.1", "red", [] ],
+    [ "rfid1:GND", "esp:GND.1", "black", [] ],
+    [ "rfid1:RST", "esp:7", "green", [] ],
+    [ "rfid1:MISO", "esp:13", "green", [] ],
+    [ "rfid1:SDA", "esp:10", "green", [] ],
+    [ "rfid1:MOSI", "esp:11", "green", [] ],
+    [ "rfid1:SCK", "esp:12", "green", [] ],
+    [ "rfid2:3.3V", "esp:3V3.1", "red", [ "h86.45" ] ],
+    [ "rfid2:RST", "esp:7", "green", [] ],
+    [ "rfid2:GND", "esp:GND.1", "black", [ "h48", "v-105.6" ] ],
+    [ "rfid2:MISO", "esp:13", "green", [ "h48", "v-153.6" ] ],
+    [ "rfid2:MOSI", "esp:11", "green", [ "h48", "v-182.4" ] ],
+    [ "rfid2:SCK", "esp:12", "green", [ "h48", "v-182.4" ] ],
+    [ "rfid2:SDA", "esp:9", "green", [ "h48", "v-220.8" ] ],
+    [ "servo1:GND", "esp:GND.1", "black", [ "h489.6", "v-268.8" ] ],
+    [ "servo2:GND", "esp:GND.1", "black", [] ],
+    [ "servo2:V+", "esp:5V", "red", [ "v-0.1", "h508.8", "v-38.4" ] ],
+    [ "servo1:V+", "esp:5V", "red", [ "h489.6", "v-268.9" ] ],
+    [ "servo2:PWM", "esp:4", "green", [] ],
+    [ "servo1:PWM", "esp:5", "green", [] ],
+    [ "led2:C", "esp:GND.4", "black", [ "v9.6", "h768.4", "v-220.8" ] ],
+    [ "led1:C", "esp:GND.4", "black", [ "v9.6", "h739.6" ] ],
+    [ "led2:A", "r2:1", "green", [] ],
+    [ "led1:A", "r1:1", "green", [] ],
+    [ "r2:2", "esp:17", "green", [] ],
+    [ "r1:2", "esp:16", "green", [] ],
+    [ "bz1:1", "esp:GND.4", "black", [ "v67.2", "h604.8", "v-201.6" ] ],
+    [ "bz1:2", "esp:18", "green", [ "h28.8", "v77.2", "h470.45" ] ],
+    [ "relay2:VCC", "esp:5V", "red", [ "v-28.8", "h-460.8", "v326.4" ] ],
+    [ "relay1:VCC", "esp:5V", "red", [ "v-19.2", "h-86.4", "v153.6", "h-623.95" ] ],
+    [ "relay2:GND", "esp:GND.3", "black", [ "v-28.8", "h-316.4", "v326.4" ] ],
+    [ "relay2:IN", "esp:14", "green", [ "v-28.8", "h-441.4", "v316.8" ] ],
+    [ "relay1:GND", "esp:GND.3", "black", [ "v-9.6", "h-66.8", "v144", "h-268.8", "v-585.6" ] ],
+    [ "relay1:COM", "esp:5V", "red", [ "v39.6", "h-459.35" ] ],
+    [ "relay2:COM", "esp:5V", "red", [ "v68.4", "h-507.35" ] ],
+    [ "relay2:NO", "r3:2", "green", [ "v87.6", "h-35.4" ] ],
+    [ "relay1:NO", "r4:1", "green", [ "v30", "h78.6", "v-192" ] ],
+    [ "r4:2", "led4:A", "green", [ "h-94.8", "v115.2" ] ],
+    [ "led4:C", "esp:GND.3", "black", [ "v19.2", "h-201.2", "v-537.6" ] ],
+    [ "led6:A", "r3:1", "green", [] ],
+    [ "led6:C", "esp:GND.3", "black", [ "v86.4", "h-335.6" ] ],
+    [ "relay1:IN", "esp:38", "green", [ "h-38.2", "v134.4", "h-288", "v-691.2" ] ],
+    [ "lcd1:GND", "esp:GND.3", "black", [ "h-9.6", "v-86.4", "h460.8", "v374.4" ] ],
+    [ "lcd1:VCC", "esp:5V", "red", [ "h-19.2", "v-67.1", "h336", "v345.6" ] ],
+    [ "lcd1:SDA", "esp:39", "cyan", [ "h-28.8", "v-76.6", "h480", "v230.4" ] ],
+    [ "lcd1:SCL", "esp:40", "cyan", [ "h-38.4", "v-86.1", "h489.6", "v220.8" ] ],
+    [ "lcd6:GND", "esp:GND.3", "black", [ "h-96", "v460.8" ] ],
+    [ "lcd6:VCC", "esp:5V", "red", [ "h-230.4", "v451.3" ] ],
+    [ "lcd6:SDA", "esp:39", "cyan", [ "h-96", "v326.6" ] ],
+    [ "lcd6:SCL", "esp:40", "cyan", [ "h-96", "v307.5" ] ],
+    [ "lcd2:GND", "esp:GND.3", "black", [ "h-19.2", "v-38.4", "h470.4", "v-297.6" ] ],
+    [ "lcd2:VCC", "esp:5V", "red", [ "h-28.8", "v-57.5", "h326.4", "v-288" ] ],
+    [ "lcd2:SDA", "esp:39", "cyan", [ "h-28.8", "v105.8", "h480", "v-576" ] ],
+    [ "lcd2:SCL", "esp:40", "cyan", [ "h-19.2", "v86.7", "h470.4", "v-576" ] ],
+    [ "lcd4:GND", "esp:GND.3", "black", [ "h-192", "v-249.6" ] ],
+    [ "lcd4:VCC", "esp:5V", "red", [] ],
+    [ "lcd4:SDA", "esp:39", "cyan", [ "h-192", "v-383.8" ] ],
+    [ "lcd4:SCL", "esp:40", "cyan", [ "h-192", "v-402.9" ] ],
+    [ "sd1:VCC", "esp:3V3.1", "red", [] ],
+    [ "sd1:GND", "esp:GND.1", "black", [] ],
+    [ "sd1:CS", "esp:6", "green", [] ],
+    [ "sd1:DI", "esp:11", "green", [] ],
+    [ "sd1:DO", "esp:13", "green", [] ],
+    [ "sd1:SCK", "esp:12", "green", [] ],
+    [ "rtc1:5V", "esp:5V", "red", [] ],
+    [ "rtc1:GND", "esp:GND.1", "black", [] ],
+    [ "rtc1:SDA", "esp:39", "cyan", [ "h202.3", "v-764.8" ] ],
+    [ "rtc1:SCL", "esp:40", "cyan", [ "h211.9", "v-774.4" ] ],
+    [ "pir1a:VCC", "esp:5V", "red", [ "h-249.6", "v268.8" ] ],
+    [ "pir1a:GND", "esp:GND.3", "black", [ "h-76.8", "v249.34" ] ],
+    [ "pir1a:OUT", "esp:1", "green", [ "h-115.2", "v95.86" ] ],
+    [ "pir1b:VCC", "esp:5V", "red", [ "h-57.6", "v278.4", "h-192", "v-105.6" ] ],
+    [ "pir1b:GND", "esp:GND.3", "black", [ "h-76.8", "v153.34" ] ],
+    [ "pir1b:OUT", "esp:15", "green", [ "h-19.2", "v-67.34", "h-220.8", "v105.6" ] ],
+    [ "pir2a:VCC", "esp:5V", "red", [ "h-201.6", "v-364.8" ] ],
+    [ "pir2a:GND", "esp:GND.3", "black", [ "h-28.8", "v-384.26" ] ],
+    [ "pir2a:OUT", "esp:41", "green", [ "h-67.2", "v-508.94" ] ],
+    [ "pir2b:VCC", "esp:5V", "red", [ "h-203.32", "v-472.68" ] ],
+    [ "pir2b:GND", "esp:GND.3", "black", [ "h-30.52", "v-492.14" ] ],
+    [ "pir2b:OUT", "esp:47", "green", [ "h-68.92", "v-520.82" ] ],
+    [ "ldr1:VCC", "esp:3V3.1", "red", [ "h-240", "v326.4" ] ],
+    [ "ldr1:GND", "esp:GND.3", "black", [] ],
+    [ "ldr1:AO", "esp:2", "orange", [ "h-86.4", "v394.3" ] ],
+    [ "ldr2:VCC", "esp:3V3.1", "red", [ "h-530.8", "v-845" ] ],
+    [ "ldr2:GND", "esp:GND.3", "black", [ "h-358", "v-643" ] ],
+    [ "ldr2:AO", "esp:3", "orange", [ "h-511.6", "v-700.3" ] ],
+    [ "kp1:R1", "esp:8", "green", [ "v28.8", "h748.85" ] ],
+    [ "kp1:R2", "esp:35", "green", [ "v28.8", "h825.2" ] ],
+    [ "kp1:R3", "esp:36", "green", [ "v28.8", "h815.7" ] ],
+    [ "kp1:R4", "esp:37", "green", [ "v28.8", "h806.2" ] ],
+    [ "kp1:C1", "esp:45", "green", [ "v28.8", "h796.7" ] ],
+    [ "kp1:C2", "esp:46", "green", [ "v28.8", "h700.85" ] ],
+    [ "kp1:C3", "esp:48", "green", [ "v28.8", "h777.45" ] ],
+    [ "kp1:C4", "esp:0", "green", [ "v28.8", "h767.7" ] ],
+    [ "emergency_btn:1.l", "esp:21", "orange", [ "v260", "h750" ] ],
+    [ "emergency_btn:2.l", "esp:GND.1", "black", [ "v280", "h770" ] ],
+    [ "smoke_alarm_sim:2", "esp:42", "purple", [ "v310", "h530" ] ],
+    [ "smoke_alarm_sim:1", "esp:GND.1", "black", [ "v310", "h530" ] ],
+    [ "smoke_alarm_sim:3", "esp:3V3.1", "red", [ "v310", "h530" ] ],
+    [ "passage_entry_beam:1.l", "esp:19", "blue", [ "h-70", "v-560", "h1040" ] ],
+    [ "passage_entry_beam:2.l", "esp:GND.1", "black", [ "h-90", "v-580", "h1080" ] ],
+    [ "passage_exit_beam:1.l", "esp:20", "blue", [ "h-110", "v600", "h1110" ] ],
+    [ "passage_exit_beam:2.l", "esp:GND.1", "black", [ "h-130", "v620", "h1150" ] ]
   ],
   "dependencies": {}
 }
