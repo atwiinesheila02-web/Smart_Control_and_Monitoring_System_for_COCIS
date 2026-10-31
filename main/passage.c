@@ -1,6 +1,3 @@
-/* PRESENTER 3: passage.c
- * See presenters/ for explanation and demo notes.
- */
 #include "shared.h"
 
 /* ================= SECTION: actuators.c ================= */

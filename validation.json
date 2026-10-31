@@ -1,6 +1,7 @@
 {
   "native_syntax_check": "all 5 C files pass with mocked SDK declarations",
   "test_results": [
+<<<<<<< HEAD
     "PASS: 131 production-code reliability assertions; 431 checkpoint commits; 400 concurrent room transitions",
     "PASS: 83 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
     "PASS: 83 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)",
@@ -15,3 +16,13 @@
   "lighting_evidence": "tests/wokwi/lighting.yaml; tests/wokwi/lighting.log; tests/wokwi/dark-lamp.png; tests/wokwi/bright-lamp.png",
   "lighting_firmware_sha256": "d7f82649c8f6c203123042a9925aa676dbe9f941353970342572b5647b010cdc"
 }
+=======
+    "PASS: 111 production-code reliability assertions; 431 checkpoint commits; 400 concurrent room transitions",
+    "PASS: 83 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
+    "PASS: 83 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)"
+  ],
+  "native_sanitizers": "not enabled in this run",
+  "full_esp_idf_build": "not run: toolchain unavailable",
+  "wokwi_run": "not run: diagram/project unavailable"
+}
+>>>>>>> 28bac6b49f69cfd024f434c3b962521beb7b086b

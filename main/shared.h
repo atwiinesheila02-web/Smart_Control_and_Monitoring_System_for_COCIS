@@ -27,6 +27,76 @@
 #include <math.h>
 #include <sys/stat.h>
 
+#if defined(_WIN32) || defined(__MINGW32__) || defined(__MINGW64__)
+#include <direct.h>
+#include <errno.h>
+#include <stdlib.h>
+
+#ifndef gmtime_r
+static inline struct tm *gmtime_r(const time_t *timer, struct tm *result)
+{
+    if (!timer || !result) return NULL;
+    struct tm *tmp = gmtime(timer);
+    if (!tmp) return NULL;
+    *result = *tmp;
+    return result;
+}
+#endif
+
+#ifndef setenv
+static inline int setenv(const char *name, const char *value, int overwrite)
+{
+    if (!name || !value) return -1;
+    if (!overwrite) {
+        size_t needed = 0;
+        if (getenv_s(&needed, NULL, 0, name) == 0 && needed != 0) return 0;
+    }
+    return _putenv_s(name, value);
+}
+#endif
+
+#ifdef mkdtemp
+#undef mkdtemp
+#endif
+#define mkdtemp smartguard_mkdtemp
+static inline char *smartguard_mkdtemp(char *tmpl)
+{
+    if (!tmpl) {
+        errno = EINVAL;
+        return NULL;
+    }
+    size_t len = strlen(tmpl);
+    if (len < 6 || strcmp(tmpl + len - 6, "XXXXXX") != 0) {
+        errno = EINVAL;
+        return NULL;
+    }
+    char *slash = strrchr(tmpl, '/');
+    if (slash) {
+        size_t keep = (size_t)(slash - tmpl) + 1;
+        memmove(tmpl, slash + 1, len - keep + 1);
+        len -= keep;
+    }
+    char *backslash = strrchr(tmpl, '\\');
+    if (backslash) {
+        size_t keep = (size_t)(backslash - tmpl) + 1;
+        memmove(tmpl, backslash + 1, len - keep + 1);
+        len -= keep;
+    }
+    const char *chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    srand((unsigned int)time(NULL) ^ (unsigned int)rand());
+    for (size_t i = 0; i < 6; i++) {
+        tmpl[len - 6 + i] = chars[rand() % 62];
+    }
+    if (_mkdir(tmpl) == 0) return tmpl;
+    errno = EEXIST;
+    return NULL;
+}
+
+#ifndef mkdir
+#define mkdir(path, mode) _mkdir(path)
+#endif
+#endif
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"

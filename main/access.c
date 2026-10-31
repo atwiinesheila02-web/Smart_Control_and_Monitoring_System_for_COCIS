@@ -1,6 +1,3 @@
-/* PRESENTER 2: access.c
- * See presenters/ for explanation and demo notes.
- */
 #include "shared.h"
 
 /* ================= SECTION: rfid.c ================= */
