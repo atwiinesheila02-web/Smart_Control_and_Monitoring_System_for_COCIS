@@ -2,8 +2,8 @@
 
 ## Running the current passage and emergency firmware
 
-After changing source files, run `idf.py reconfigure build` in an ESP-IDF terminal,
-then stop and restart Wokwi. `wokwi.toml` loads `build/cocis_smartguard.bin`;
+After changing source files, run `idf.py -B build-current reconfigure build` in an ESP-IDF terminal,
+then stop and restart Wokwi. `wokwi.toml` loads `build-current/cocis_smartguard.bin`;
 editing C files alone does not update that firmware. The startup log must include
 `Firmware: verified passage + emergency inputs` and its build date/time.
 
@@ -127,14 +127,14 @@ If NVS is unreadable, inspect the error and saved data before deciding whether t
 Normal after-hours restrictions have an explicit emergency exception. This is coursework simulation code; real-building fire detection, emergency egress and power-loss behavior require approved alarm interfaces and suitable exit hardware.
 
 ## Ten-minute closing warning and closing-time alarm
-While the schedule is open, the first check in the final 10 minutes before closing triggers a 10-second buzzer warning (500 ms on, 500 ms off). All four LCDs briefly show BUILDING CLOSING / IN 10 MINUTES (or the actual remaining minutes if the warning starts late); serial and SD logs record the remaining minutes and occupancy. It warns even when recorded occupancy is zero.
+While the schedule is open, the first check in the final 10 minutes before closing triggers a 10-second buzzer warning (500 ms on, 500 ms off). All four LCDs show BUILDING CLOSING / IN 10 MINUTES, then update the remaining minutes until closing. Temporary access messages and the entrance admin menu remain usable; the countdown returns after temporary messages expire. Serial and SD logs record the remaining minutes and occupancy. It warns even when recorded occupancy is zero.
 
 The warning is nonblocking and does not change door permissions or occupancy. Both normal entry and exit remain restricted after closing time. Emergency alarm output takes priority and cancels an ongoing closing beep. One warning is issued per closing occurrence during a run, including overnight schedules. A restart in the warning window warns again. Starting or moving the clock into the final ten minutes warns immediately; skipping the entire window cannot issue an advance warning. A changed closing time gets its own warning if it lies in the current warning window.
 
 Configure CLOSING_WARNING_MIN, CLOSING_BUZZ_MS and CLOSING_BEEP_MS in main/main.c. No extra hardware is required.
 
 When the schedule changes from open to closed, a second 10-second pulsing alarm
-sounds, all four LCDs briefly show BUILDING CLOSED / Please leave now, and serial
+sounds, all four LCDs show BUILDING CLOSED until reopening, and serial
 and SD logs record CLOSING ALARM. It sounds once for that transition, including
 overnight schedules. An admin time/schedule change that closes the building also
 triggers it. Starting while already closed does not trigger it. Emergency alarm
@@ -146,11 +146,28 @@ Then enter `time set 2026-10-30 20:50:00` for the advance warning. After its ten
 seconds finish, enter `time set 2026-10-30 20:59:55` and wait five seconds for the
 closing-time alarm. Restore the correct clock and schedule after testing.
 
-## Main exit independent of room counts
-Removed the Leave room first rejection. A registered card recorded inside can authorize a verified main exit during opening hours even if room sensors missed an exit. The passage beam must still confirm movement. Room counts are retained rather than guessing which room the person left. A nonzero room count after the last building exit produces CHECK REQUIRED / Room mismatch. Discrepancies persist across restart for inspection and can be corrected with the existing administrative reconciliation process. Closing-time restrictions and emergency priority remain in effect.
+## Main exit requires a room exit first
+Normal main-door exit requires a recorded corridor occupant. To leave a room,
+trigger its INNER PIR and then OUTER PIR within six seconds; the room count
+decreases while building occupancy stays unchanged. Once the sensors clear,
+scan the same card at the main exit and press/release the EXIT PASSAGE button.
+That verified passage reduces building occupancy only. A scan made while all
+recorded occupants are still in rooms is rejected with Leave room first. Exit
+reservations prevent room entry from consuming a corridor occupant who is
+already passing through the main exit. Emergency evacuation still holds the exit
+open without requiring cards or room PIR motion.
+
+PIRs count anonymous movements; they do not identify cardholders. With multiple
+occupants, this rule guarantees available corridor capacity, not personal room
+identity. Room counts are never automatically decremented by a main-door scan.
 
 User-facing storage/state failure messages now say SYSTEM DOWN (Contact admin on idle door screens). Detailed checkpoint and journal errors remain in diagnostic logs.
 
 Card rejection labels: Card not registered, Card already used, and No entrance recorded. Each uses two LCD rows to fit all words without truncation; the rejection beep and full log reason remain. Card already used means the card currently has a confirmed entry without a confirmed exit, not that it can only be used once.
 
 Display simplification: after-hours scans show ACCESS DENIED / Building closed, and closed idle door screens show BUILDING CLOSED without opening hours. Removed No one inside (the per-card No entrance recorded check covers this), Door busy, Sensor not clear and Counts unverified explanations from access LCDs. Busy/blocked passage checks still refuse authorization with a generic ACCESS DENIED display; uncertain occupancy uses ACCESS DENIED / Contact admin. Detailed diagnostic and checklist messages remain.
+
+## Occupancy labels
+The `occupancy` and `status` commands show Room 1, Room 2 and Building count.
+Building count includes everyone recorded inside, including people outside the
+two monitored rooms. It does not identify a corridor, toilet or other location.

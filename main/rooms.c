@@ -190,6 +190,38 @@ void lcd_init_all(void)
     }
 }
 
+/* Select the actual screen under the state lock, before touching I2C.
+ * Transient access messages and the admin menu remain usable; emergency wins. */
+void lcd_render_lines(int id, char line1[17], char line2[17])
+{
+    state_lock();
+    lcd_t *d = &lcds[id];
+    xSemaphoreTake(lcd_mutex, portMAX_DELAY);
+    bool showing = d->msg_active && (int32_t)(d->msg_until_ms - now_ms()) > 0;
+    if (!showing) d->msg_active = false;
+    memcpy(line1, showing ? d->msg[0] : d->idle[0], 17);
+    memcpy(line2, showing ? d->msg[1] : d->idle[1], 17);
+    xSemaphoreGive(lcd_mutex);
+
+    if (id != LCD_ENTRY || menu_state == M_IDLE) {
+        if (!schedule_open()) {
+            snprintf(line1, 17, "%-16.16s", "BUILDING CLOSED");
+            snprintf(line2, 17, "%-16.16s", "");
+        } else if (!showing) {
+            int remaining = (sched_close_min - minutes_now() + 1440) % 1440;
+            if (remaining > 0 && remaining <= CLOSING_WARNING_MIN) {
+                char countdown[17];
+                snprintf(countdown, sizeof(countdown), "IN %d MINUTE%s", remaining,
+                         remaining == 1 ? "" : "S");
+                snprintf(line1, 17, "%-16.16s", "BUILDING CLOSING");
+                snprintf(line2, 17, "%-16.16s", countdown);
+            }
+        }
+    }
+    emergency_display(id, line1, line2);
+    state_unlock();
+}
+
 void lcd_task(void *arg)
 {
     (void)arg;
@@ -199,13 +231,7 @@ void lcd_task(void *arg)
             if (!d->present) continue;
 
             char l1[17], l2[17];
-            xSemaphoreTake(lcd_mutex, portMAX_DELAY);
-            bool showing = d->msg_active && (int32_t)(d->msg_until_ms - now_ms()) > 0;
-            if (!showing) d->msg_active = false;
-            memcpy(l1, showing ? d->msg[0] : d->idle[0], 17);
-            memcpy(l2, showing ? d->msg[1] : d->idle[1], 17);
-            xSemaphoreGive(lcd_mutex);
-            emergency_display(i, l1, l2);
+            lcd_render_lines(i, l1, l2);
 
             if (!d->shown_valid || strcmp(l1, d->shown[0]) != 0 ||
                 strcmp(l2, d->shown[1]) != 0) {

@@ -764,7 +764,8 @@ static void evaluate(void)
 static void publish(void)
 {
     const char *headline = reasons ? "CHECK REQUIRED" : "BUILDING CLEAR";
-    lcd_msg(LCD_ENTRY, headline, checklist_summary()); lcd_msg(LCD_EXIT, headline, checklist_summary());
+    if (reasons) lcd_msg(LCD_ENTRY, headline, checklist_summary());
+    lcd_msg(LCD_EXIT, headline, checklist_summary());
     printf("LAST PERSON OUT: %s (%s)\n", headline, checklist_summary());
     printf("  building=%d rooms=%d/%d cached=%d/%d lights=%s/%s room_online=%s/%s\n",
         inside_count(), master_room[0], master_room[1], room1.count, room2.count,

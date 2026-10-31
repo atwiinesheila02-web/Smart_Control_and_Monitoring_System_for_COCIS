@@ -12,7 +12,7 @@ if os.environ.get('SMARTGUARD_SANITIZE') == '1':
 subprocess.run(flags+['-fsyntax-only']+list(map(str,sorted(main.glob('*.c')))),check=True)
 results=[]
 with tempfile.TemporaryDirectory() as tmp:
-    for test in ['reliability_test','emergency_test','passage_test']:
+    for test in ['reliability_test','emergency_test','passage_test','rfid_test']:
         binary=str(Path(tmp)/test)
         subprocess.run(flags+list(map(str,sources))+[str(tests/'mock_sdk.c'),str(tests/(test+'.c')),'-pthread','-lm','-Wl,--gc-sections','-o',binary],check=True)
         p=subprocess.run([binary],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True,timeout=30,env={**os.environ,'ASAN_OPTIONS':'detect_leaks=0'})

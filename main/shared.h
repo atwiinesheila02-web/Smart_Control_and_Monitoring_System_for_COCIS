@@ -366,6 +366,7 @@ void lcd_idle(int id, const char *l1, const char *l2);
 void lcd_msg(int id, const char *l1, const char *l2);
 void lcd_init_all(void);
 void lcd_task(void *arg);
+void lcd_render_lines(int id, char line1[17], char line2[17]);
 
 /* EMERGENCY PUBLIC API */
 enum { EM_SOURCE_BUTTON = 1, EM_SOURCE_SMOKE = 2, EM_SOURCE_STORAGE = 4 };

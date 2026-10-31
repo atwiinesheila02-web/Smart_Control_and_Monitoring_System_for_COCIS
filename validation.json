@@ -1,11 +1,17 @@
 {
-    "native_syntax_check":  "all 5 C files pass with mocked SDK declarations",
-    "test_results":  [
-                         "PASS: 111 production-code reliability assertions; 431 checkpoint commits; 400 concurrent room transitions",
-                         "PASS: 83 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
-                         "PASS: 83 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)"
-                     ],
-    "native_sanitizers":  "not enabled in this run",
-    "full_esp_idf_build":  "PASS: ESP-IDF v6.0.2 ESP32-S3 build on 2026-10-30, including advance warning and closing-time alarm",
-    "wokwi_run":  "Not run by agent; restart Wokwi to load rebuilt firmware and check both closing alarms"
+  "native_syntax_check": "all 5 C files pass with mocked SDK declarations",
+  "test_results": [
+    "PASS: 131 production-code reliability assertions; 431 checkpoint commits; 400 concurrent room transitions",
+    "PASS: 83 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
+    "PASS: 83 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)",
+    "PASS: 13 RFID integration assertions (offline exit retry, SPI handle reuse, entry scan, exit scan and verified exit)"
+  ],
+  "native_sanitizers": "not enabled in this run",
+  "full_esp_idf_build": "PASS: ESP-IDF v6.0.2 ESP32-S3 build-current firmware; normal main exit requires corridor capacity after room exit",
+  "wokwi_run": "PASS: Green Card verified entry; Room 2 GPIO outer->inner produces R2=1 TOT=1; main exit denied; inner->outer produces R2=0 TOT=1; verified main exit produces R2=0 TOT=0",
+  "wokwi_fixture_note": "tests/wokwi/room-input-fixture.json substitutes pushbuttons and pull-downs for the two Room 2 PIR outputs to drive the actual firmware GPIO inputs. Original diagram unchanged. Run with --diagram-file and --scenario tests/wokwi/room-sequence.yaml.",
+  "firmware_sha256": "83f91126e3351e2c5a621baa2249c753b05766b88d71c3a7a61f939d9eb2ee28",
+  "lighting_live_test": "PASS: Wokwi Room 2 lamp OFF when empty; occupied at 20 lux -> ON, relay IN=1 and NO=1; occupied at 500 lux -> OFF, IN=0 and NO=0; 100ms relay settling allowed; visible lamp screenshots saved",
+  "lighting_evidence": "tests/wokwi/lighting.yaml; tests/wokwi/lighting.log; tests/wokwi/dark-lamp.png; tests/wokwi/bright-lamp.png",
+  "lighting_firmware_sha256": "d7f82649c8f6c203123042a9925aa676dbe9f941353970342572b5647b010cdc"
 }

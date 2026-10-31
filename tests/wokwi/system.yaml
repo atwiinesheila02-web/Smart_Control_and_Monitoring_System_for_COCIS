@@ -1,0 +1,88 @@
+name: SmartGuard live entry and exit
+version: 1
+steps:
+  - wait-serial: 'Terminals running:'
+  - write-serial: "login 2026\n"
+  - wait-serial: 'Admin login OK'
+  - write-serial: "time set 2026-10-31 12:00:00\n"
+  - delay: 500ms
+  - write-serial: "schedule set 05:00 21:00\n"
+  - wait-serial: 'Schedule changed'
+  - write-serial: "adduser 01020304 LiveTest\n"
+  - delay: 500ms
+  - set-control:
+      part-id: rfid1
+      name: card
+      value: 0
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 1
+  - wait-serial: 'ENTRY: PENDING'
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 0
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'ENTRY: CONFIRMED'
+  - set-control:
+      part-id: rfid2
+      name: card
+      value: 0
+  - set-control:
+      part-id: rfid2
+      name: tagPresent
+      value: 1
+  - wait-serial: 'EXIT card detected:'
+  - wait-serial: 'EXIT: PENDING'
+  - set-control:
+      part-id: rfid2
+      name: tagPresent
+      value: 0
+  - set-control:
+      part-id: passage_exit_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_exit_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'EXIT: CONFIRMED'
+  - write-serial: "occupancy\n"
+  - wait-serial: 'Building count: 0'
+  - write-serial: "time set 2026-10-31 20:50:00\n"
+  - wait-serial: 'CLOSING WARNING:'
+  - delay: 4000ms
+  - take-screenshot:
+      part-id: lcd2
+      save-to: smartguard-warning.png
+  - delay: 6500ms
+  - write-serial: "time set 2026-10-31 20:59:58\n"
+  - wait-serial: 'CLOSING ALARM:'
+  - delay: 3500ms
+  - take-screenshot:
+      part-id: lcd2
+      save-to: smartguard-closed.png
+  - set-control:
+      part-id: emergency_btn
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - write-serial: "emergency status\n"
+  - wait-serial: 'Emergency: ACTIVE'
+  - set-control:
+      part-id: emergency_btn
+      name: pressed
+      value: 0
+  - delay: 1200ms
+  - write-serial: "emergency reset\n"
+  - wait-serial: 'Emergency reset.'

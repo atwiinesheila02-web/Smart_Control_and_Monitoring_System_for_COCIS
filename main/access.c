@@ -36,6 +36,8 @@ void setup_reader(reader_t *r, const char *name, door_t *door,
     r->door = door;
     r->is_exit = is_exit;
     r->cs = cs;
+    r->last_seen_us = esp_timer_get_time();
+    r->reported = false;
 
     spi_device_interface_config_t dc = {
         .mode = 0,
@@ -43,7 +45,7 @@ void setup_reader(reader_t *r, const char *name, door_t *door,
         .spics_io_num = cs,
         .queue_size = 1,
     };
-    if (spi_bus_add_device(SPI_HOST_ID, &dc, &r->dev) != ESP_OK) {
+    if (!r->dev && spi_bus_add_device(SPI_HOST_ID, &dc, &r->dev) != ESP_OK) {
         printf("%s: cannot attach the reader to the SPI bus\n", r->name);
         r->available = false;
         return;
@@ -128,7 +130,16 @@ static int read_uid(reader_t *r, uint8_t uid[4])
 
 void poll_reader(reader_t *r)
 {
-    if (!r->available) return;
+    if (!r->available) {
+        /* Retry a failed startup without attaching duplicate SPI devices or
+           pulsing the shared reset line (which would disrupt the other reader). */
+        if (esp_timer_get_time() - r->last_seen_us >= 5000000) {
+            xSemaphoreTake(spi_mutex, portMAX_DELAY);
+            setup_reader(r, r->name, r->door, r->is_exit, r->cs);
+            xSemaphoreGive(spi_mutex);
+        }
+        return;
+    }
 
     uint8_t uid[4];
     xSemaphoreTake(spi_mutex, portMAX_DELAY);
@@ -374,8 +385,8 @@ void entrance_idle_refresh(void)
         else if (open_now)          lcd_idle(LCD_ENTRY, "ENTRANCE", "Scan your card");
         else                        lcd_idle(LCD_ENTRY, "BUILDING CLOSED", "");
     }
-    if (menu_state == M_IDLE && checklist_status() >= CHECKLIST_CLEAR) {
-        lcd_idle(LCD_ENTRY, checklist_status() == CHECKLIST_CLEAR ? "BUILDING CLEAR" : "CHECK REQUIRED", checklist_summary());
+    if (menu_state == M_IDLE && checklist_status() == CHECKLIST_REQUIRED) {
+        lcd_idle(LCD_ENTRY, "CHECK REQUIRED", checklist_summary());
     }
 
     if (!state_healthy()) lcd_idle(LCD_EXIT, "SYSTEM DOWN", "Contact admin");
@@ -454,6 +465,8 @@ void handle_scan(bool is_exit, const uint8_t *uid)
     } else {
         if (!open_now)      deny_access(lcd_id, point, uidtxt, name, "Building closed");
         else if (!users[ui].inside)           deny_access(lcd_id, point, uidtxt, name, "No entrance recorded");
+        else if (corridor_count() <= passage_reserved_exits())
+            deny_access(lcd_id, point, uidtxt, name, "Leave room first");
         else grant_access(true, ui, uidtxt, "");
     }
 }
@@ -731,10 +744,13 @@ static void print_status(void)
            exit_override ? " (exit override ACTIVE)" : "");
     emergency_print_status();
     passage_print_status();
-    printf("%s: %d person(s), room1=%d, room2=%d, corridor=%d\n",
-           emergency_counts_uncertain() ? "Last known" : "Inside    ", inside_count(), master_room[0], master_room[1], corridor_count());
+    printf("Room 1: %d\nRoom 2: %d\nBuilding count: %d\n",
+           master_room[0], master_room[1], inside_count());
     printf("Lights    : room1=%s, room2=%s\n", room_lights[0] ? "ON" : "OFF",
            room_lights[1] ? "ON" : "OFF");
+    printf("Readers   : entry=%s (CS%d), exit=%s (CS%d); offline readers retry every 5 seconds\n",
+           entry_reader.available ? "ONLINE" : "OFFLINE", entry_reader.cs,
+           exit_reader.available ? "ONLINE" : "OFFLINE", exit_reader.cs);
     printf("SD card   : %s\n", sd_ok ? "OK" : "NOT AVAILABLE");
     printf("Rooms     : %s, %s\n", room_offline[0] ? "ROOM 1 OFFLINE" : "ROOM 1 online",
            room_offline[1] ? "ROOM 2 OFFLINE" : "ROOM 2 online");
@@ -780,8 +796,8 @@ static void cli_exec(char *line)
             return;
         }
         if (emergency_counts_uncertain()) printf("UNVERIFIED: values below are last-known records, not a live headcount\n");
-        printf("Occupancy: R1=%d R2=%d TOT=%d (corridor=%d)\n",
-               master_room[0], master_room[1], inside_count(), corridor_count());
+        printf("Room 1: %d\nRoom 2: %d\nBuilding count: %d\n",
+               master_room[0], master_room[1], inside_count());
     }
     else if (eq(c, "rooms")) {
         if (emergency_counts_uncertain()) printf("Room counts are LAST KNOWN, not verified after evacuation\n");

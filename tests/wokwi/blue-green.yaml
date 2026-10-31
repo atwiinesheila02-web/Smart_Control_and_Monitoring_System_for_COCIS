@@ -1,0 +1,59 @@
+name: Blue and Green Card tap comparison
+version: 1
+steps:
+  - wait-serial: 'Terminals running:'
+  - write-serial: "login 2026\n"
+  - wait-serial: 'Admin login OK'
+  - write-serial: "time set 2026-10-31 12:00:00\n"
+  - wait-serial: 'Time set to'
+  - set-control:
+      part-id: rfid1
+      name: card
+      value: 0
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 1
+  - delay: 500ms
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 0
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'ENTRY: CONFIRMED'
+  - delay: 600ms
+  - set-control:
+      part-id: rfid1
+      name: card
+      value: 1
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 1
+  - delay: 500ms
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 0
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'ENTRY: CONFIRMED'
+  - write-serial: "occupancy\n"
+  - wait-serial: 'Building count: 2'

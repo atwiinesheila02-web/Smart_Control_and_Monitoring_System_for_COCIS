@@ -45,8 +45,51 @@ int ledc_channel_config(const ledc_channel_config_t*c){(void)c;return 0;}
 int ledc_set_duty(int a,int b,uint32_t c){(void)a;atomic_store(&mock_ledc_duty[b],c);return 0;}
 int ledc_update_duty(int a,int b){(void)a;(void)b;return 0;}
 int spi_bus_initialize(int a,const spi_bus_config_t*b,int c){(void)a;(void)b;(void)c;return 0;}
-int spi_bus_add_device(int a,const spi_device_interface_config_t*b,spi_device_handle_t*c){(void)a;(void)b;*c=(void*)1;return 0;}
-int spi_device_polling_transmit(spi_device_handle_t a,spi_transaction_t*b){(void)a;memset(b->rx_data,0,4);return 0;}
+bool mock_reader_simulate;
+int mock_reader_versions[64], mock_reader_attach_count[64];
+bool mock_reader_present[64];
+uint8_t mock_reader_uid[4];
+static uint8_t reader_request[64][10], reader_response[64][10];
+static int request_count[64], response_count[64], response_pos[64];
+int spi_bus_add_device(int a,const spi_device_interface_config_t*b,spi_device_handle_t*c){
+    (void)a;
+    if(mock_reader_simulate) {
+        mock_reader_attach_count[b->spics_io_num]++;
+        *c=(void*)(uintptr_t)(b->spics_io_num+1);
+    } else *c=(void*)1;
+    return 0;
+}
+int spi_device_polling_transmit(spi_device_handle_t a,spi_transaction_t*b){
+    memset(b->rx_data,0,4);
+    if(!mock_reader_simulate)return 0;
+    int cs=(int)(uintptr_t)a-1;
+    assert(cs>=0&&cs<64);
+    int reg=(b->tx_data[0]&0x7e)>>1;
+    if(b->tx_data[0]&0x80) {
+        switch(reg) {
+        case 0x37:b->rx_data[1]=(uint8_t)mock_reader_versions[cs];break;
+        case 0x04:b->rx_data[1]=mock_reader_present[cs]?0x20:0x01;break;
+        case 0x0a:b->rx_data[1]=(uint8_t)response_count[cs];break;
+        case 0x09:assert(response_pos[cs]<10);b->rx_data[1]=reader_response[cs][response_pos[cs]++];break;
+        case 0x14:b->rx_data[1]=3;break;
+        }
+    } else {
+        uint8_t value=b->tx_data[1];
+        if(reg==0x0a&&(value&0x80))request_count[cs]=response_count[cs]=response_pos[cs]=0;
+        if(reg==0x09) {assert(request_count[cs]<10);reader_request[cs][request_count[cs]++]=value;}
+        if(reg==0x01&&value==0x0c&&mock_reader_present[cs]) {
+            if(reader_request[cs][0]==0x52) {
+                reader_response[cs][0]=4;reader_response[cs][1]=0;response_count[cs]=2;
+            } else if(reader_request[cs][0]==0x93) {
+                memcpy(reader_response[cs],mock_reader_uid,4);
+                reader_response[cs][4]=mock_reader_uid[0]^mock_reader_uid[1]^mock_reader_uid[2]^mock_reader_uid[3];
+                response_count[cs]=5;
+            }
+            response_pos[cs]=0;
+        }
+    }
+    return 0;
+}
 int esp_vfs_fat_sdspi_mount(const char*a,const sdmmc_host_t*b,const sdspi_device_config_t*c,const esp_vfs_fat_sdmmc_mount_config_t*d,sdmmc_card_t**e){(void)a;(void)b;(void)c;(void)d;(void)e;return ESP_FAIL;}
 int uart_driver_install(int a,int b,int c,int d,void*e,int f){(void)a;(void)b;(void)c;(void)d;(void)e;(void)f;return 0;}
 int uart_read_bytes(int a,void*b,unsigned c,unsigned d){(void)a;(void)b;(void)c;(void)d;return 0;}

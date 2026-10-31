@@ -291,6 +291,11 @@ bool passage_begin(bool is_exit, int ui)
     if (!atomic_load(&initialized) || !journal_ok || unresolved || ui < 0 || ui >= MAX_USERS ||
         !users[ui].used || emergency_exit_required() || emergency_counts_uncertain() ||
         !state_healthy() || !schedule_open() || users[ui].inside != is_exit) return false;
+    /* Only a corridor occupant can reserve a normal building exit. Room PIR
+       inner->outer must return occupants to the corridor first. */
+    if (is_exit && corridor_count() <= passage_reserved_exits()) {
+        lcd_msg(LCD_EXIT, "ACCESS DENIED", "Leave room first"); return false;
+    }
     if (gates[i].active || passage_user_pending(ui)) {
         lcd_msg(i ? LCD_EXIT : LCD_ENTRY, "ACCESS DENIED", ""); return false;
     }
@@ -325,6 +330,9 @@ static void confirm_gate(int i)
         users[ui].inside != (i != 0) || !state_healthy() || !schedule_open() ||
         emergency_counts_uncertain()) {
         cancel_gate(i, "passage could not be reconciled", true); return;
+    }
+    if (i && corridor_count() <= 0) {
+        cancel_gate(i, "no corridor occupant for building exit", true); return;
     }
     users[ui].inside = i == 0; users[ui].since = 0;
     if (!i) {

@@ -1,0 +1,114 @@
+name: SmartGuard live entry and exit
+version: 1
+steps:
+  - wait-serial: 'Terminals running:'
+  - write-serial: "login 2026\n"
+  - wait-serial: 'Admin login OK'
+  - write-serial: "time set 2026-10-31 12:00:00\n"
+  - delay: 500ms
+  - write-serial: "schedule set 05:00 21:00\n"
+  - wait-serial: 'Schedule changed'
+  - write-serial: "adduser 01020304 LiveTest\n"
+  - delay: 500ms
+  - set-control:
+      part-id: rfid1
+      name: card
+      value: 1
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 1
+  - wait-serial: 'ENTRY: PENDING'
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 0
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'ENTRY: CONFIRMED'
+  - set-control:
+      part-id: pir2a
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: pir2b
+      name: pressed
+      value: 1
+  - wait-serial: 'ROOM 2: ENTERED, count=1'
+  - set-control:
+      part-id: pir2a
+      name: pressed
+      value: 0
+  - set-control:
+      part-id: pir2b
+      name: pressed
+      value: 0
+  - delay: 200ms
+  - write-serial: "occupancy\n"
+  - wait-serial: 'Room 2: 1'
+  - wait-serial: 'Building count: 1'
+  - set-control:
+      part-id: rfid2
+      name: card
+      value: 1
+  - set-control:
+      part-id: rfid2
+      name: tagPresent
+      value: 1
+  - wait-serial: 'EXIT: ACCESS DENIED (Leave room first)'
+  - set-control:
+      part-id: rfid2
+      name: tagPresent
+      value: 0
+  - delay: 600ms
+  - set-control:
+      part-id: pir2b
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: pir2a
+      name: pressed
+      value: 1
+  - wait-serial: 'ROOM 2: LEFT, count=0'
+  - set-control:
+      part-id: pir2a
+      name: pressed
+      value: 0
+  - set-control:
+      part-id: pir2b
+      name: pressed
+      value: 0
+  - write-serial: "occupancy\n"
+  - wait-serial: 'Room 2: 0'
+  - wait-serial: 'Building count: 1'
+  - set-control:
+      part-id: rfid2
+      name: tagPresent
+      value: 1
+  - wait-serial: 'EXIT: PENDING'
+  - set-control:
+      part-id: rfid2
+      name: tagPresent
+      value: 0
+  - set-control:
+      part-id: passage_exit_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_exit_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'EXIT: CONFIRMED'
+  - write-serial: "occupancy\n"
+  - wait-serial: 'Room 2: 0'
+  - wait-serial: 'Building count: 0'

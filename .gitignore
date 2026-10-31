@@ -2,3 +2,5 @@ build/
 sdkconfig.old
 tests/*.log
 .vscode/
+
+build-current/
