@@ -1,6 +1,3 @@
-/* PRESENTER 5: safety.c
- * See presenters/ for explanation and demo notes.
- */
 #include "shared.h"
 
 /* ================= SECTION: state.c ================= */

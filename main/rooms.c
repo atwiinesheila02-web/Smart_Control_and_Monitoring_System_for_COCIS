@@ -1,6 +1,3 @@
-/* PRESENTER 4: rooms.c
- * See presenters/ for explanation and demo notes.
- */
 #include "shared.h"
 
 /* ================= SECTION: i2c_bus.c ================= */

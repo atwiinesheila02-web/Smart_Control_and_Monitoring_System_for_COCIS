@@ -1,7 +1,3 @@
-/* PRESENTER 1: main.c
- * See presenters/ for explanation and demo notes.
- */
-
 /* ================= SECTION: main.c ================= */
 /* CoCIS Smart Control and Monitoring System
  * Target : ESP32-S3-DevKitC-1 on Wokwi
