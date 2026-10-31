@@ -54,7 +54,7 @@ int main(void) {
     room_init(&room1,"ROOM 1",TERM_ROOM1,LCD_ROOM1,14,1,15,ADC_CHANNEL_1);
     room_init(&room2,"ROOM 2",TERM_ROOM2,LCD_ROOM2,38,41,47,ADC_CHANNEL_2);
     int a=find_user(card_a),b=find_user(card_b);CHECK(a>=0&&b>=0);
-    // Both doors, duplicate scans, unknown cards and room/corridor consistency.
+    // Both doors, duplicate scans, unknown cards and room/building consistency.
     scan(false,card_a);CHECK(users[a].inside&&inside_count()==1&&!passage_waiting(false));
     scan(false,card_a);CHECK(inside_count()==1);
     scan(true,card_b);CHECK(inside_count()==1);
@@ -91,13 +91,13 @@ int main(void) {
     room_init(&room1,"ROOM 1",TERM_ROOM1,LCD_ROOM1,14,1,15,ADC_CHANNEL_1);
     room_init(&room2,"ROOM 2",TERM_ROOM2,LCD_ROOM2,38,41,47,ADC_CHANNEL_2);
     CHECK(room1.count==1&&room2.count==1&&room1.lights_on&&room2.lights_on);
-    // Enforce both doors after hours even if an old override flag is set.
+    // Enforce both doors after hours.
     CHECK(record_room_motion(&room1,false));CHECK(record_room_motion(&room2,false));
-    clock_epoch=make_epoch(2026,10,29,22,0,0);exit_override=true;
+    clock_epoch=make_epoch(2026,10,29,22,0,0);
     scan(true,card_a);CHECK(users[a].inside);
     uint8_t card_c[4]={2,2,2,2};CHECK(add_user(card_c,"Third")>=0);CHECK(users_save());
     scan(false,card_c);CHECK(inside_count()==2);
-    command("unlock");CHECK(!schedule_open());
+    CHECK(!schedule_open());
     entry_door.open=exit_door.open=true;schedule_check();CHECK(!entry_door.open&&!exit_door.open);
     // Overnight schedule boundaries.
     sched_open_min=1200;sched_close_min=360;CHECK(config_save());

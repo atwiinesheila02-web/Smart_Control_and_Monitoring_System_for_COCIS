@@ -256,9 +256,14 @@ int users_total(void)
     return n;
 }
 
+int building_count(void)
+{
+    return inside_count();
+}
+
 int corridor_count(void)
 {
-    return inside_count() - master_room[0] - master_room[1];
+    return building_count() - master_room[0] - master_room[1];
 }
 
 bool users_save(void)
@@ -569,7 +574,7 @@ bool record_room_motion(room_t *room, bool entering)
         }
     }
     if (!allowed) {
-        printf("%s: occupancy update refused; check corridor/count/state\n", room->name);
+        printf("%s: occupancy update refused; check building count/state\n", room->name);
         log_event(F_SYSTEM, "WARN,%s occupancy update refused", room->name);
         lcd_msg(LCD_ENTRY, "COUNT NOT UPDATED", "Check room/state");
     }
@@ -623,12 +628,6 @@ void master_periodic(void)
     uint32_t now = now_ms();
 
     schedule_check();
-
-    if (exit_override && (int32_t)(override_until_ms - now) <= 0) {
-        exit_override = false;
-        printf("INFO: emergency exit override expired\n");
-        log_event(F_SYSTEM, "INFO,exit override expired");
-    }
 
     for (int i = 0; i < 2; i++) {
         if (!room_offline[i] && (now - room_seen_ms[i]) > (uint32_t)ROOM_OFFLINE_MS) {
@@ -723,7 +722,7 @@ static void print_help(void)
     printf(" ADMIN: log [n] | log sys [n] | log rooms [n] | log find <text>\n");
     printf(" ADMIN: export <access|rooms|system|users|config>\n");
     printf(" ADMIN: schedule set HH:MM HH:MM | adduser <uid> <name> | deluser <uid>\n");
-    printf(" ADMIN: time set YYYY-MM-DD HH:MM[:SS] | unlock | lock | reboot (or reset)\n");
+    printf(" ADMIN: time set YYYY-MM-DD HH:MM[:SS] | reboot (or reset)\n");
     printf(" ADMIN: person enter|leave 1|2   (test hook for the door PIRs)\n");
     printf(" KEYPAD: press * for the menu on the entrance screen, # = Enter,\n");
     printf("         2/8 = up/down, tag IDs accept digits 0-9 and letters A-D\n\n");
@@ -736,13 +735,12 @@ static void print_status(void)
     sched_text(sched, sizeof(sched));
     printf("\n=== STATUS ===\n");
     printf("Time      : %s (%s)\n", ts, rtc_present ? (rtc_ok ? "RTC DS1307" : "RTC read error") : "software clock");
-    printf("Schedule  : %s -> building is %s%s\n", sched,
-           schedule_open() ? "OPEN" : "CLOSED",
-           exit_override ? " (exit override ACTIVE)" : "");
+    printf("Schedule  : %s -> building is %s\n", sched,
+           schedule_open() ? "OPEN" : "CLOSED");
     emergency_print_status();
     passage_print_status();
     printf("Room 1: %d\nRoom 2: %d\nBuilding count: %d\n",
-           master_room[0], master_room[1], inside_count());
+           master_room[0], master_room[1], building_count());
     printf("Lights    : room1=%s, room2=%s\n", room_lights[0] ? "ON" : "OFF",
            room_lights[1] ? "ON" : "OFF");
     printf("Readers   : entry=%s (CS%d), exit=%s (CS%d); offline readers retry every 5 seconds\n",
@@ -794,7 +792,7 @@ static void cli_exec(char *line)
         }
         if (emergency_counts_uncertain()) printf("UNVERIFIED: values below are last-known records, not a live headcount\n");
         printf("Room 1: %d\nRoom 2: %d\nBuilding count: %d\n",
-               master_room[0], master_room[1], inside_count());
+               master_room[0], master_room[1], building_count());
     }
     else if (eq(c, "rooms")) {
         if (emergency_counts_uncertain()) printf("Room counts are LAST KNOWN, not verified after evacuation\n");
@@ -905,16 +903,6 @@ static void cli_exec(char *line)
         admin_logged = false;
         printf("Logged out\n");
         log_event(F_SYSTEM, "INFO,admin logout");
-    }
-    else if (eq(c, "unlock")) {
-        if (!admin_check()) return;
-        printf("DENIED: this coursework build strictly enforces opening hours\n");
-    }
-    else if (eq(c, "lock")) {
-        if (!admin_check()) return;
-        exit_override = false;
-        printf("Exit override cancelled\n");
-        log_event(F_SYSTEM, "INFO,exit override cancelled");
     }
     else if (eq(c, "adduser")) {
         if (!admin_check()) return;
@@ -1093,7 +1081,7 @@ static void menu_build_items(void)
         menu_items[menu_item_n++] = IT_DEL;
         menu_items[menu_item_n++] = IT_OPEN;
         menu_items[menu_item_n++] = IT_CLOSE;
-        if (emergency_active()) menu_items[menu_item_n++] = IT_OVR;
+        if (emergency_active()) menu_items[menu_item_n++] = IT_EM_RESET;
         menu_items[menu_item_n++] = IT_LOGOUT;
     } else {
         menu_items[menu_item_n++] = IT_LOGIN;
@@ -1115,7 +1103,7 @@ static const char *item_label(int it)
     case IT_DEL:    return "Remove tag";
     case IT_OPEN:   return "Open time";
     case IT_CLOSE:  return "Close time";
-    case IT_OVR:    return "Emergency reset";
+    case IT_EM_RESET:    return "Emergency reset";
     case IT_LOGOUT: return "Logout";
     }
     return "";
@@ -1198,8 +1186,7 @@ static void menu_render(void)
                          rtc_present ? "RTC" : "SW");
             } else if (menu_page == 1) {
                 sched_text(l1, sizeof(l1));
-                snprintf(l2, sizeof(l2), "Now:%s%s", schedule_open() ? "OPEN" : "CLOSED",
-                         exit_override ? " OVR" : "");
+                snprintf(l2, sizeof(l2), "Now:%s", schedule_open() ? "OPEN" : "CLOSED");
             } else {
                 snprintf(l1, sizeof(l1), "SD:%s RTC:%s", sd_ok ? "OK" : "NO", rtc_ok ? "OK" : "NO");
                 snprintf(l2, sizeof(l2), "Users:%d Adm:%s", users_total(),
@@ -1300,7 +1287,7 @@ static void menu_select(int it)
 {
 
     bool admin_item = (it == IT_LOG || it == IT_REG || it == IT_DEL || it == IT_OPEN ||
-                       it == IT_CLOSE || it == IT_OVR || it == IT_LOGOUT);
+                       it == IT_CLOSE || it == IT_EM_RESET || it == IT_LOGOUT);
     if (admin_item) {
         if (!admin_active()) {
             lcd_msg(LCD_ENTRY, "SESSION EXPIRED", "Log in again");
@@ -1365,7 +1352,7 @@ static void menu_select(int it)
         menu_state = M_TIME_CLOSE;
         break;
 
-    case IT_OVR:
+    case IT_EM_RESET:
         emergency_reset();
         break;
 

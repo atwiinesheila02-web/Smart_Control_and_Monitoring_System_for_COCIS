@@ -20,7 +20,7 @@ Wokwi CLI requires a locally configured `WOKWI_CLI_TOKEN`. Do not put it in sour
 files. The CLI can automate signals and capture screenshots; a signal measurement
 does not verify audible playback through the computer's speakers.
 
-## Source files
+shared.h contains types, public declarations and externs. Configuration values remain in main.c; there is no config.h or system.h. Each source has section banners. The earlier module names in notes identify sections inside these merged files. The labelled diagram.json is included.
 
 | File | Responsibility |
 |---|---|

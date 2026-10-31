@@ -7,15 +7,15 @@
     "PASS: 13 RFID integration assertions (offline exit retry, SPI handle reuse, entry scan, exit scan and verified exit)"
   ],
   "native_sanitizers": "ASan/UBSan enabled and passed",
-  "full_esp_idf_build": "PASS: ESP-IDF v6.0.2 ESP32-S3 build-current firmware, including strict PIR sequence deadline",
-  "wokwi_run": "PASS: six current live scenarios: both cards; room-exit-first sequence; Room 1 and Room 2 lamps; smoke/reset guard; closing alarms, LCDs, emergency button and admin reset",
+  "full_esp_idf_build": "PASS: ESP-IDF v6.0.2 ESP32-S3 build-current after pull conflict resolution",
+  "wokwi_run": "Previous audited firmware passed six live scenarios; live Wokwi scenarios were not rerun after this merge",
   "wokwi_fixture_note": "tests/wokwi/room-input-fixture.json substitutes pushbuttons and pull-downs for the two Room 2 PIR outputs to drive the actual firmware GPIO inputs. Original diagram unchanged. Run with --diagram-file and --scenario tests/wokwi/room-sequence.yaml.",
-  "firmware_sha256": "d8bdeb353066af7e06bae1be937c408e4f9338207dbb20d1850e76180d291d7a",
+  "firmware_sha256": "8d10e642df53866b85fa65e2ee0bcbf994094d821d75556f799fda1fd7ffa496",
   "lighting_live_test": "PASS: both rooms at 20 lux ON / 500 lux OFF; control pins, connected ON contacts and actual lamp screenshots inspected",
   "lighting_evidence": "tests/wokwi/lighting.yaml; tests/wokwi/lighting.log; tests/wokwi/dark-lamp.png; tests/wokwi/bright-lamp.png",
   "lighting_firmware_sha256": "d7f82649c8f6c203123042a9925aa676dbe9f941353970342572b5647b010cdc",
-  "audit_status": "PASS: conflict, structured-file, sanitized native, target-build and six live simulator checks complete",
-  "native_source_sha256": "f2f7db8475b3399e65969a7e0d82df07fbe26761aec838cbab492fc87d887b92",
+  "audit_status": "PASS: post-pull sanitized native tests and target build; previous full audit/live evidence retained separately",
+  "native_source_sha256": "9d1db741c7d7915d6f4e41f9f269d61f5b18cf30dd5b6513cc16837225628ad8",
   "audited_source_sha256": "f2f7db8475b3399e65969a7e0d82df07fbe26761aec838cbab492fc87d887b92",
   "live_results": "tests/wokwi/audit/live-results.json",
   "buzzer_waveform": {
@@ -30,5 +30,7 @@
     "PIR movement is anonymous; normal exit verifies available occupancy outside rooms, not personal room identity.",
     "Buzzer electrical waveform is verified; audible playback on the user computer is not verified.",
     "Live room sequence uses a test GPIO fixture; original PIR user-interface motion controls were not automated."
-  ]
+  ],
+  "merge_status": "PASS: resolved README/access conflicts with origin/main 3d418215935aa30c107b7699c658dcb5fa1ddee1; retained local behavior and incoming building-count helper/emergency-menu cleanup",
+  "previous_live_firmware_sha256": "d8bdeb353066af7e06bae1be937c408e4f9338207dbb20d1850e76180d291d7a"
 }
