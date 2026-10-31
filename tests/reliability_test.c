@@ -142,6 +142,16 @@ int main(void) {
     room1.seq=RS_IDLE;room1.seq_since_ms=0;room1.a.active=room1.b.active=false;
     room_update_sequence(&room1,true,false,100);CHECK(room1.seq==RS_WAIT_B);
     room_update_sequence(&room1,false,true,200);CHECK(room1.count==1&&master_room[0]==1&&room1.seq==RS_CLEARING);
+    // A late second PIR must not count; the exact deadline remains valid.
+    CHECK(record_room_motion(&room1,false)); // make one building occupant available
+    room2.seq=RS_IDLE;room_update_sequence(&room2,true,false,1000);
+    room_update_sequence(&room2,false,true,1000+SEQ_TIMEOUT_MS+1);
+    CHECK(master_room[1]==0&&room2.count==0&&room2.seq==RS_CLEARING);
+    room2.seq=RS_IDLE;room_update_sequence(&room2,true,false,10000);
+    room_update_sequence(&room2,false,true,10000+SEQ_TIMEOUT_MS);
+    CHECK(master_room[1]==1&&room2.count==1);
+    CHECK(record_room_motion(&room2,false));
+    CHECK(record_room_motion(&room1,true)); // restore the original lighting fixture
     mock_adc_raw=4095;room_read_light(&room1);room_apply(&room1);CHECK(room1.dark&&room1.lights_on);
     float resistance=LDR_RL10*1000.0f*powf(10.0f,LDR_GAMMA)/powf(125.0f,LDR_GAMMA);
     int mid=(int)(4095.0f*resistance/(resistance+10000.0f));

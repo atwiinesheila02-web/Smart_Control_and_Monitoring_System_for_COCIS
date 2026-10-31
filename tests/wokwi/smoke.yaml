@@ -1,0 +1,30 @@
+name: Smoke alarm and admin reset
+version: 1
+steps:
+  - wait-serial: 'Terminals running:'
+  - write-serial: "login 2026\n"
+  - wait-serial: 'Admin login OK'
+  - set-control:
+      part-id: smoke_alarm_sim
+      name: value
+      value: 1
+  - delay: 200ms
+  - expect-pin:
+      part-id: esp
+      name: 42
+      value: 1
+  - write-serial: "emergency status\n"
+  - wait-serial: 'smoke=ALARM'
+  - write-serial: "emergency reset\n"
+  - wait-serial: 'DENIED: release button and clear smoke input'
+  - set-control:
+      part-id: smoke_alarm_sim
+      name: value
+      value: 0
+  - delay: 1200ms
+  - expect-pin:
+      part-id: esp
+      name: 42
+      value: 0
+  - write-serial: "emergency reset\n"
+  - wait-serial: 'Emergency reset.'

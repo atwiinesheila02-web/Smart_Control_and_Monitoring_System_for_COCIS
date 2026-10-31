@@ -22,7 +22,7 @@
       "id": "led2",
       "top": 351.6,
       "left": 157.4,
-      "attrs": { "color": "limegreen" }
+      "attrs": { "color": "green" }
     },
     {
       "type": "wokwi-resistor",
@@ -230,7 +230,7 @@
       "id": "smoke_alarm_sim",
       "top": 710,
       "left": 340,
-      "attrs": { "value": "", "bounce": "0" }
+      "attrs": { "bounce": "0" }
     },
     {
       "type": "wokwi-pushbutton",

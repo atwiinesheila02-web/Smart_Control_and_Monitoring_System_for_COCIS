@@ -23,4 +23,13 @@ with tempfile.TemporaryDirectory() as tmp:
         print(p.stderr.strip())
 count=len(list(main.glob('*.c')))
 print(f'PASS: all {count} application C files pass native syntax checks with SDK stubs')
-(root/'validation.json').write_text(json.dumps({'native_syntax_check':f'all {count} C files pass with mocked SDK declarations','test_results':results,'native_sanitizers':'ASan/UBSan enabled and passed' if os.environ.get('SMARTGUARD_SANITIZE')=='1' else 'not enabled in this run','full_esp_idf_build':'not run: toolchain unavailable','wokwi_run':'not run: diagram/project unavailable'},indent=2))
+validation_path=root/'validation.json'
+previous=json.loads(validation_path.read_text(encoding='utf-8-sig')) if validation_path.exists() else {}
+previous.update({'native_syntax_check':f'all {count} C files pass with mocked SDK declarations',
+                 'test_results':results,
+                 'native_sanitizers':'ASan/UBSan enabled and passed' if os.environ.get('SMARTGUARD_SANITIZE')=='1' else 'not enabled in this run'})
+previous.setdefault('full_esp_idf_build','not run by native test runner')
+previous.setdefault('wokwi_run','not run by native test runner')
+import hashlib
+previous['native_source_sha256']=hashlib.sha256(b''.join(p.read_bytes() for p in sorted(main.glob('*.[ch]')))).hexdigest()
+validation_path.write_text(json.dumps(previous,indent=2)+'\n',encoding='utf-8')

@@ -1,0 +1,38 @@
+[
+  {
+    "name": "blue-green",
+    "passed": true,
+    "cli_log": "tests/wokwi/audit/blue-green-cli.log",
+    "serial_log": "tests/wokwi/audit/blue-green-serial.log"
+  },
+  {
+    "name": "room-sequence",
+    "passed": true,
+    "cli_log": "tests/wokwi/audit/room-sequence-cli.log",
+    "serial_log": "tests/wokwi/audit/room-sequence-serial.log"
+  },
+  {
+    "name": "lighting-room1",
+    "passed": true,
+    "cli_log": "tests/wokwi/audit/lighting-room1-cli.log",
+    "serial_log": "tests/wokwi/audit/lighting-room1-serial.log"
+  },
+  {
+    "name": "lighting-room2",
+    "passed": true,
+    "cli_log": "tests/wokwi/audit/lighting-room2-cli.log",
+    "serial_log": "tests/wokwi/audit/lighting-room2-serial.log"
+  },
+  {
+    "name": "smoke",
+    "passed": true,
+    "cli_log": "tests/wokwi/audit/smoke-cli.log",
+    "serial_log": "tests/wokwi/audit/smoke-serial.log"
+  },
+  {
+    "name": "system",
+    "passed": true,
+    "cli_log": "tests/wokwi/audit/system-cli.log",
+    "serial_log": "tests/wokwi/audit/system-serial.log"
+  }
+]

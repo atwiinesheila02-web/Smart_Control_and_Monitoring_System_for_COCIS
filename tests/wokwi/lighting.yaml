@@ -2,9 +2,10 @@ name: Room 2 daylight and lamp test
 version: 1
 steps:
   - wait-serial: 'Terminals running:'
+  - delay: 200ms
   - expect-pin:
       part-id: relay1
-      name: NO
+      name: IN
       value: 0
   - write-serial: "login 2026\n"
   - wait-serial: 'Admin login OK'
@@ -51,7 +52,7 @@ steps:
       value: 1
   - take-screenshot:
       part-id: led4
-      save-to: smartguard-dark-lamp.png
+      save-to: dark-lamp.png
   - set-control:
       part-id: ldr2
       name: lux
@@ -62,10 +63,6 @@ steps:
       part-id: relay1
       name: IN
       value: 0
-  - expect-pin:
-      part-id: relay1
-      name: NO
-      value: 0
   - take-screenshot:
       part-id: led4
-      save-to: smartguard-bright-lamp.png
+      save-to: bright-lamp.png

@@ -17,14 +17,14 @@ def add_wiring(data, board_id=None):
     top=float(board.get('top',0));left=float(board.get('left',0))+300
     parts.extend([
         {'type':'wokwi-pushbutton','id':'emergency_btn','top':top-70,'left':left,'attrs':{'color':'red','label':'EMERGENCY EXIT'}},
-        {'type':'wokwi-slide-switch','id':'smoke_alarm_sim','top':top+20,'left':left,'attrs':{'value':'','bounce':'0'}}
+        {'type':'wokwi-slide-switch','id':'smoke_alarm_sim','top':top+20,'left':left,'attrs':{'bounce':'0'}}
     ])
     connections.extend([
         ['emergency_btn:1.l',f'{bid}:21','orange',[]],
         ['emergency_btn:2.l',f'{bid}:GND.1','black',[]],
         ['smoke_alarm_sim:2',f'{bid}:42','purple',[]],
         ['smoke_alarm_sim:1',f'{bid}:GND.1','black',[]],
-        ['smoke_alarm_sim:3',f'{bid}:3V3','red',[]]
+        ['smoke_alarm_sim:3',f'{bid}:3V3.1','red',[]]
     ])
     data['parts']=parts;data['connections']=connections
     return data

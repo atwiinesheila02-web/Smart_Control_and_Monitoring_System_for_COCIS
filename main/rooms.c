@@ -456,13 +456,13 @@ static void room_update_sequence(room_t *room, bool a_new, bool b_new, uint32_t 
     case RS_WAIT_A: {
         bool entering = room->seq == RS_WAIT_B;
         bool second_sensor = entering ? b_new : a_new;
-        if (second_sensor) {
-            if (entering) room_person_entering(room);
-            else room_person_leaving(room);
-        } else if (now - room->seq_since_ms > (uint32_t)SEQ_TIMEOUT_MS) {
+        if (now - room->seq_since_ms > (uint32_t)SEQ_TIMEOUT_MS) {
             printf("%s: %s sequence timed out (%s sensor not triggered)\n",
                    room->name, entering ? "entry" : "exit",
                    entering ? "inside" : "outside");
+        } else if (second_sensor) {
+            if (entering) room_person_entering(room);
+            else room_person_leaving(room);
         } else {
             break; /* Keep waiting for the second sensor. */
         }

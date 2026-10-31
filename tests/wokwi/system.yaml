@@ -1,4 +1,4 @@
-name: SmartGuard live entry and exit
+name: SmartGuard live system audit
 version: 1
 steps:
   - wait-serial: 'Terminals running:'
@@ -59,6 +59,10 @@ steps:
   - wait-serial: 'EXIT: CONFIRMED'
   - write-serial: "occupancy\n"
   - wait-serial: 'Building count: 0'
+  - delay: 4000ms
+  - take-screenshot:
+      part-id: lcd1
+      save-to: entrance-after-checkout.png
   - write-serial: "time set 2026-10-31 20:50:00\n"
   - wait-serial: 'CLOSING WARNING:'
   - delay: 4000ms

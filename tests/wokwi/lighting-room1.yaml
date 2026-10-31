@@ -1,0 +1,68 @@
+name: Room 1 daylight and lamp test
+version: 1
+steps:
+  - wait-serial: 'Terminals running:'
+  - delay: 200ms
+  - expect-pin:
+      part-id: relay2
+      name: IN
+      value: 0
+  - write-serial: "login 2026\n"
+  - wait-serial: 'Admin login OK'
+  - write-serial: "time set 2026-10-31 12:00:00\n"
+  - wait-serial: 'Time set to'
+  - set-control:
+      part-id: rfid1
+      name: card
+      value: 1
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 1
+  - wait-serial: 'ENTRY: PENDING'
+  - set-control:
+      part-id: rfid1
+      name: tagPresent
+      value: 0
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 1
+  - delay: 200ms
+  - set-control:
+      part-id: passage_entry_beam
+      name: pressed
+      value: 0
+  - wait-serial: 'ENTRY: CONFIRMED'
+  - write-serial: "person enter 1\n"
+  - wait-serial: 'ROOM 1: ENTERED, count=1'
+  - set-control:
+      part-id: ldr1
+      name: lux
+      value: 20
+  - wait-serial: 'ROOM 1: lights ON'
+  - delay: 100ms
+  - expect-pin:
+      part-id: relay2
+      name: IN
+      value: 1
+  - expect-pin:
+      part-id: relay2
+      name: NO
+      value: 1
+  - take-screenshot:
+      part-id: led6
+      save-to: room1-dark-lamp.png
+  - set-control:
+      part-id: ldr1
+      name: lux
+      value: 500
+  - wait-serial: 'ROOM 1: lights OFF'
+  - delay: 100ms
+  - expect-pin:
+      part-id: relay2
+      name: IN
+      value: 0
+  - take-screenshot:
+      part-id: led6
+      save-to: room1-bright-lamp.png

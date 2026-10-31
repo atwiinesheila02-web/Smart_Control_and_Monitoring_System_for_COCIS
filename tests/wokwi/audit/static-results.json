@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "syntax_files": {
+    "json": 7,
+    "toml": 1,
+    "yaml": 6,
+    "python": 3
+  },
+  "diagram_parts": 56,
+  "connections": 105,
+  "conflict_markers": 0,
+  "duplicate_part_ids": 0,
+  "token_files": 0,
+  "build_paths": "current project / build-current",
+  "helper_scripts": "wiring and duplicate rejection pass"
+}
