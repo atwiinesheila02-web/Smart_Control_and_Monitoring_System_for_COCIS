@@ -4,8 +4,10 @@
  * File   : main/main.c of an ESP-IDF project, entry point app_main()
  * APIs   : ESP-IDF only (FreeRTOS, gpio, spi_master, sdspi + FATFS, ledc, uart,
  *          esp_timer).
- * Terminals: ENTRANCE (master), ROOM 1, ROOM 2 run as separate FreeRTOS tasks
- *          that talk over message queues and share resources through mutexes.
+ * Terminals: ENTRANCE (master), ROOM 1, ROOM 2 run as separate FreeRTOS tasks on
+ *          one ESP32. Occupancy and other shared state are protected by
+ *          state_mutex; the queues carry only telemetry, faults, keypad events
+ *          and storage queries. Other shared hardware has its own mutex.
  * Rooms  : two PIR motion sensors per door (outside + inside); the order in
  *          which they fire tells entry from exit. A light sensor (LDR) per room
  *          keeps the lights off while the room is bright enough.
@@ -150,7 +152,6 @@
 #define ADMIN_SESSION_MS  60000
 #define LOCKOUT_MS        30000
 #define MAX_PIN_FAILS     3
-#define OVERRIDE_MS       600000
 #define MENU_TIMEOUT_MS   30000
 
 /* MFRC522 registers */
@@ -217,7 +218,7 @@
 #define IT_DEL     7
 #define IT_OPEN    8
 #define IT_CLOSE   9
-#define IT_OVR     10
+#define IT_EM_RESET     10
 #define IT_LOGOUT  11
 
 
@@ -275,7 +276,6 @@ const int cfg_ROOM_OFFLINE_MS = ROOM_OFFLINE_MS;
 const int cfg_ADMIN_SESSION_MS = ADMIN_SESSION_MS;
 const int cfg_LOCKOUT_MS = LOCKOUT_MS;
 const int cfg_MAX_PIN_FAILS = MAX_PIN_FAILS;
-const int cfg_OVERRIDE_MS = OVERRIDE_MS;
 const int cfg_MENU_TIMEOUT_MS = MENU_TIMEOUT_MS;
 const int cfg_COMMAND_REG = COMMAND_REG;
 const int cfg_COM_IRQ_REG = COM_IRQ_REG;
@@ -352,8 +352,6 @@ uint32_t sw_base_ms = 0;
 int sched_open_min = DEFAULT_OPEN_MIN;
 int sched_close_min = DEFAULT_CLOSE_MIN;
 bool last_open = true;
-bool exit_override = false;
-uint32_t override_until_ms = 0;
 user_t users[MAX_USERS];
 int master_room[2] = {0, 0};
 bool room_lights[2] = {false, false};

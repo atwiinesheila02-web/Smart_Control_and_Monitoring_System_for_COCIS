@@ -30,13 +30,11 @@ The implementation is merged into exactly five C files plus one shared header in
 | 4 | rooms.c | I2C, LCDs, telemetry and room/entrance tasks |
 | 5 | safety.c | State persistence, SD storage, emergency and checklist |
 
-shared.h contains types, public declarations and externs. Configuration values remain in main.c; there is no config.h or system.h. Each source has section banners. The earlier module names in notes identify sections inside these merged files. Presenter guides are under presenters/. The labelled diagram.json is included.
+shared.h contains types, public declarations and externs. Configuration values remain in main.c; there is no config.h or system.h. Each source has section banners. The earlier module names in notes identify sections inside these merged files. The labelled diagram.json is included.
 
 Build the complete project; do not add the old source files alongside these merged versions. The root and main CMakeLists.txt files are included. Native checks pass, but target ESP-IDF compilation and Wokwi execution remain to be done.
 
 # CoCIS SmartGuard - verified passage and closing checklist
-
-Start with PASSAGE_CHECKLIST_SETUP.md for verified entry/exit and the last-person-out checklist. EMERGENCY_SETUP.md covers smoke/button evacuation.
 
 This is the revised single-ESP32-S3 ESP-IDF coursework implementation. It keeps three FreeRTOS terminals (entrance, room 1 and room 2) on one ESP32. Configuration values, pins, startup and shared state definitions remain in main/main.c. No config.h or system.h is needed. This package contains code and setup notes, not the coursework report.
 
@@ -55,7 +53,6 @@ The standard ESP-IDF partition table must include NVS (the default normally does
 
 - Verified passage with one active-low beam per designated doorway (GPIO19/20 by default).
 - Last-person-out checklist after the final confirmed exit, plus the checklist serial command.
-- See PASSAGE_CHECKLIST_SETUP.md for hardware requirements, UART0/native-USB constraints and exact demo steps.
 
 ## Earlier fixes
 
@@ -109,9 +106,9 @@ These are native logic tests with mocked ESP-IDF/NVS/hardware calls. They are no
 ## Simulation checks to perform next
 
 1. Read a known card: the door opens, but occupancy must not change until the corresponding passage sensor is blocked and cleared. Test entry and exit separately; reject unknown cards and duplicate/busy windows.
-2. Trigger outside then inside PIR for entry, reverse for exit; check both rooms and the corridor total.
+2. Trigger outside then inside PIR for entry, reverse for exit; check both rooms and the building total.
 3. Vary LDR light levels while occupied; empty rooms must turn lights off.
-4. With no emergency active, log in and change the schedule, then verify both doors reject scans outside hours. Use an overnight schedule too. Test emergency evacuation separately using EMERGENCY_SETUP.md.
+4. With no emergency active, log in and change the schedule, then verify both doors reject scans outside hours. Use an overnight schedule too. Test emergency evacuation separately (see the emergency steps near the top of this file).
 5. Leave people recorded in rooms and use the admin reboot command. Verify the same users, schedule and counts are restored and lights are recomputed.
 6. Verify SD files and serial log queries. Temporarily remove/fail the SD card and check the serial backup and status counter.
 7. Check wrong-PIN lockout, session expiry, registration and refusal to delete an occupant.

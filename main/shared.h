@@ -259,8 +259,8 @@ static inline char *smartguard_mkdtemp(char *tmpl)
 #ifndef IT_CLOSE
 #define IT_CLOSE 9
 #endif
-#ifndef IT_OVR
-#define IT_OVR 10
+#ifndef IT_EM_RESET
+#define IT_EM_RESET 10
 #endif
 #ifndef IT_LOGOUT
 #define IT_LOGOUT 11
@@ -370,6 +370,9 @@ int find_user(const uint8_t *uid);
 int add_user(const uint8_t *uid, const char *name);
 int inside_count(void);
 int users_total(void);
+/* Building occupancy uses the whole-building total. The legacy helper remains
+   for the room-entry validation logic and compatibility with existing tests. */
+int building_count(void);
 int corridor_count(void);
 bool users_save(void);
 bool config_save(void);
@@ -641,10 +644,6 @@ extern const int cfg_MAX_PIN_FAILS;
 #ifndef SMARTGUARD_MAIN
 #define MAX_PIN_FAILS cfg_MAX_PIN_FAILS
 #endif
-extern const int cfg_OVERRIDE_MS;
-#ifndef SMARTGUARD_MAIN
-#define OVERRIDE_MS cfg_OVERRIDE_MS
-#endif
 extern const int cfg_MENU_TIMEOUT_MS;
 #ifndef SMARTGUARD_MAIN
 #define MENU_TIMEOUT_MS cfg_MENU_TIMEOUT_MS
@@ -810,8 +809,6 @@ extern uint32_t sw_base_ms;
 extern int sched_open_min;
 extern int sched_close_min;
 extern bool last_open;
-extern bool exit_override;
-extern uint32_t override_until_ms;
 extern user_t users[MAX_USERS];
 extern int master_room[2];
 extern bool room_lights[2];

@@ -46,14 +46,12 @@ int main(void){
     approve(false,0);stable(false,true);passage_poll();CHECK(!users[0].inside&&passage_waiting(false));
     stable(false,false);passage_poll();CHECK(users[0].inside&&inside_count()==1&&!passage_waiting(false)&&!entry_door.open);
     passage_poll();CHECK(inside_count()==1); // no double count
-    // Exit reservation prevents a room entry from consuming the same corridor person.
+    // Exit reservation prevents a room entry from consuming the same building person.
     approve(true,0);CHECK(passage_reserved_exits()==1&&users[0].inside);
     CHECK(!record_room_motion(&room1,true));
     CHECK(!passage_begin(false,0)); // inside card cannot authorize an entry directly
     cycle(true);passage_poll();CHECK(!users[0].inside&&inside_count()==0&&checklist_status()==CHECKLIST_WAITING);
-    room1.lights_on=false;room2.lights_on=false;room_lights[0]=room_lights[1]=false;heartbeat();
-    mock_time_ms+=CHECKLIST_SETTLE_MS-1;checklist_poll();CHECK(checklist_status()==CHECKLIST_WAITING);
-    mock_time_ms++;checklist_poll();CHECK(checklist_status()==CHECKLIST_CLEAR);
+    room1.lights_on=false;room2.lights_on=false;room_lights[0]=room_lights[1]=false;heartbeat();mock_time_ms+=CHECKLIST_SETTLE_MS-1;checklist_poll();CHECK(checklist_status()==CHECKLIST_WAITING);mock_time_ms++;checklist_poll();CHECK(checklist_status()==CHECKLIST_CLEAR);
     CHECK(strstr(lcds[LCD_EXIT].msg[0],"BUILDING CLEAR")!=NULL);
     // A lit room or stale/offline room must not pass the checklist.
     room1.lights_on=true;checklist_run();CHECK(checklist_status()==CHECKLIST_REQUIRED);CHECK(strstr(checklist_summary(),"Lights"));

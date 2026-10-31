@@ -108,7 +108,7 @@ int main(void) {
     mock_read_error=ESP_FAIL;emergency_init();CHECK(emergency_active()&&exit_door.open);mock_read_error=0;
     reset_ok();emergency_service();
     // Keypad reset uses the same authenticated, clear-input path.
-    set_inputs(true,false);emergency_poll();clear_inputs();menu_select(IT_OVR);CHECK(!emergency_active()&&!exit_door.open);
+    set_inputs(true,false);emergency_poll();clear_inputs();menu_select(IT_EM_RESET);CHECK(!emergency_active()&&!exit_door.open);
     unlink(path);rmdir(dir);
     fprintf(stderr,"PASS: %d emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)\n",checks);
     return 0;
