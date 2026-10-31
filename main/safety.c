@@ -486,6 +486,10 @@ bool emergency_exit_required(void)
     return emergency_active() || (atomic_load(&initialized) && input_sources() != 0);
 }
 
+/* Count uncertainty must never prevent egress, even after alarm reset. */
+bool exit_release_required(void)
+{ return emergency_exit_required() || emergency_counts_uncertain(); }
+
 void emergency_set_menu_visible(bool visible) { atomic_store(&menu_visible, visible); }
 bool emergency_menu_visible(void) { return atomic_load(&menu_visible); }
 
@@ -646,7 +650,7 @@ bool emergency_reset(void)
     door_close(&exit_door);
     buzzer_update();
     log_event(F_SYSTEM, "EMERGENCY,admin reset; occupancy remains UNVERIFIED");
-    printf("Emergency reset. Check the assembly point; counts remain UNVERIFIED.\n");
+    printf("Alarm reset. Exit remains OPEN; check occupants before reconciling counts.\n");
     return true;
 }
 
@@ -665,6 +669,7 @@ bool emergency_reconcile_empty(void)
     for (int i = 0; i < MAX_USERS; i++) { users[i].inside = false; users[i].since = 0; }
     master_room[0] = master_room[1] = 0;
     if (!state_commit()) return false;
+    room_capture_reset();
     room1.count = room2.count = 0;
     room1.inject = room2.inject = 0;
     room1.seq = room2.seq = RS_CLEARING;
@@ -684,6 +689,8 @@ bool emergency_reconcile_empty(void)
     revision++;
     xSemaphoreGive(emergency_mutex);
     if (!unchanged) { printf("WARNING: new emergency; occupancy remains unverified\n"); return false; }
+    door_close(&exit_door);
+    entrance_idle_refresh();
     checklist_invalidate();
     log_event(F_SYSTEM, "EMERGENCY,admin confirmed building EMPTY; occupancy reconciled");
     printf("Occupancy reconciled after administrator empty-building confirmation.\n");
@@ -707,7 +714,14 @@ void emergency_print_status(void)
 
 bool emergency_display(int id, char line1[17], char line2[17])
 {
-    if (!emergency_exit_required() || (id == LCD_ENTRY && emergency_menu_visible())) return false;
+    if (!emergency_exit_required()) {
+        if (id != LCD_EXIT || !emergency_counts_uncertain()) return false;
+        bool open_now = schedule_open();
+        snprintf(line1, 17, "%-16.16s", open_now ? "EXIT OPEN" : "BUILDING CLOSED");
+        snprintf(line2, 17, "%-16.16s", open_now ? "" : "EXIT OPEN: CHECK");
+        return true;
+    }
+    if (id == LCD_ENTRY && emergency_menu_visible()) return false;
     snprintf(line1, 17, "%-16.16s", id == LCD_EXIT ? "EMERGENCY EXIT" : "EVACUATE NOW");
     snprintf(line2, 17, "%-16.16s", id == LCD_EXIT ? "OPEN - NO RFID" : "USE MAIN EXIT");
     return true;
@@ -761,8 +775,11 @@ static void evaluate(void)
 static void publish(void)
 {
     const char *headline = reasons ? "CHECK REQUIRED" : "BUILDING CLEAR";
-    if (reasons) lcd_msg(LCD_ENTRY, headline, checklist_summary());
-    lcd_msg(LCD_EXIT, headline, checklist_summary());
+    /* Successful checks stay in the audit log; keep the normal LCD prompts. */
+    if (reasons) {
+        lcd_msg(LCD_ENTRY, headline, checklist_summary());
+        lcd_msg(LCD_EXIT, headline, checklist_summary());
+    }
     printf("LAST PERSON OUT: %s (%s)\n", headline, checklist_summary());
     printf("  building=%d rooms=%d/%d cached=%d/%d lights=%s/%s room_online=%s/%s\n",
         inside_count(), master_room[0], master_room[1], room1.count, room2.count,

@@ -204,7 +204,7 @@ void lcd_render_lines(int id, char line1[17], char line2[17])
         if (!schedule_open()) {
             snprintf(line1, 17, "%-16.16s", "BUILDING CLOSED");
             snprintf(line2, 17, "%-16.16s", "");
-        } else if (!showing) {
+        } else if (!showing && (id == LCD_ENTRY || id == LCD_EXIT)) {
             int remaining = (sched_close_min - minutes_now() + 1440) % 1440;
             if (remaining > 0 && remaining <= CLOSING_WARNING_MIN) {
                 char countdown[17];
@@ -353,7 +353,7 @@ static void room_apply(room_t *room)
     }
     char l1[24], l2[24];
     snprintf(l1, sizeof(l1), "%s Light %s", room->name, room->lights_on ? "ON" : "OFF");
-    if (emergency_counts_uncertain()) snprintf(l2, sizeof(l2), "Last known:%d", room->count);
+    if (emergency_counts_uncertain()) snprintf(l2, sizeof(l2), "Unverified:%d", room->count);
     else snprintf(l2, sizeof(l2), "People:%d %dlux", room->count, room->lux);
     lcd_idle(room->lcd_id, l1, l2);
 }
@@ -422,19 +422,6 @@ static void room_person_leaving(room_t *room)
     if (record_room_motion(room, false)) room_apply(room);
 }
 
-/* reads one PIR; returns true when it newly detects motion (LOW -> HIGH) */
-static bool pir_update(sensor_t *s, const char *room, const char *label)
-{
-    bool level = pin_get(s->pin) == 1;
-    bool newly = level && !s->active;
-    if (newly) {
-        s->since_ms = now_ms();
-        printf("%s: %s PIR detected motion\n", room, label);
-    }
-    s->active = level;
-    return newly;
-}
-
 /* Record the next PIR state and the time it began in one place. */
 static void room_set_sequence(room_t *room, int state, uint32_t now)
 {
@@ -485,6 +472,84 @@ static void room_update_sequence(room_t *room, bool a_new, bool b_new, uint32_t 
     }
 }
 
+/* Single producer (input task), one consumer per room. Publication uses
+   atomic indices; sensor capture never takes state_mutex or performs I/O. */
+#define ROOM_EVENTS 64
+typedef struct { uint32_t at, generation; bool a, b; } room_event_t;
+typedef struct {
+    room_event_t events[ROOM_EVENTS];
+    _Atomic unsigned head, tail;
+    _Atomic bool overflow;
+    bool a, b;
+} room_capture_t;
+static room_capture_t captures[2];
+static _Atomic uint32_t capture_generation;
+
+void room_capture_reset(void)
+{
+    atomic_fetch_add(&capture_generation, 1);
+    /* Reconciliation starts from current levels and waits for both PIRs to
+       clear; stale queued motion must not become a new sequence. */
+    room1.a.active = pin_get(room1.a.pin) == 1;
+    room1.b.active = pin_get(room1.b.pin) == 1;
+    room2.a.active = pin_get(room2.a.pin) == 1;
+    room2.b.active = pin_get(room2.b.pin) == 1;
+}
+
+static void room_capture_sample(int i, room_t *room)
+{
+    room_capture_t *c = &captures[i];
+    uint32_t generation = atomic_load(&capture_generation);
+    bool a = pin_get(room->a.pin) == 1, b = pin_get(room->b.pin) == 1;
+    if (a == c->a && b == c->b) return;
+    c->a = a; c->b = b;
+    unsigned head = atomic_load(&c->head), next = (head + 1) % ROOM_EVENTS;
+    if (next == atomic_load(&c->tail)) {
+        atomic_store(&c->overflow, true);
+        return;
+    }
+    c->events[head] = (room_event_t){ now_ms(), generation, a, b };
+    atomic_store(&c->head, next);
+}
+
+void room_capture_task(void *arg)
+{
+    (void)arg;
+    for (;;) {
+        room_capture_sample(0, &room1);
+        room_capture_sample(1, &room2);
+        TickType_t ticks = pdMS_TO_TICKS(10);
+        vTaskDelay(ticks ? ticks : 1);
+    }
+}
+
+static void room_capture_process(room_t *room)
+{
+    room_capture_t *c = &captures[room->term_id - TERM_ROOM1];
+    if (atomic_exchange(&c->overflow, false)) {
+        atomic_store(&c->tail, atomic_load(&c->head));
+        room->a.active = pin_get(room->a.pin) == 1;
+        room->b.active = pin_get(room->b.pin) == 1;
+        room_set_sequence(room, RS_CLEARING, now_ms());
+        occupancy_mark_uncertain("room sensor event buffer overflow");
+        return;
+    }
+    unsigned stop = atomic_load(&c->head), tail = atomic_load(&c->tail);
+    while (tail != stop) {
+        room_event_t e = c->events[tail];
+        tail = (tail + 1) % ROOM_EVENTS;
+        atomic_store(&c->tail, tail);
+        if (e.generation != atomic_load(&capture_generation)) continue;
+        bool a_new = e.a && !room->a.active, b_new = e.b && !room->b.active;
+        room->a.active = e.a; room->b.active = e.b;
+        if (a_new) room->a.since_ms = e.at;
+        if (b_new) room->b.since_ms = e.at;
+        room_update_sequence(room, a_new, b_new, e.at);
+    }
+    if (tail == atomic_load(&c->head))
+        room_update_sequence(room, false, false, now_ms());
+}
+
 static void room_receive_messages(room_t *room)
 {
     bus_msg_t m;
@@ -509,11 +574,8 @@ void room_terminal(void *arg)
             else if (inj == 2) room_person_leaving(room);
         }
 
-        bool a_new = pir_update(&room->a, room->name, "outside");
-        bool b_new = pir_update(&room->b, room->name, "inside");
+        room_capture_process(room);
         uint32_t now = now_ms();
-
-        room_update_sequence(room, a_new, b_new, now);
 
         room_receive_messages(room);
 

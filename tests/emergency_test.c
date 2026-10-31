@@ -19,7 +19,7 @@ static void set_inputs(bool button,bool smoke) {
 }
 static void clear_inputs(void) {set_inputs(false,false);emergency_poll();mock_time_ms+=EMERGENCY_CLEAR_MS;emergency_poll();}
 static void *poll_once(void *unused) {(void)unused;emergency_poll();return NULL;}
-static void reset_ok(void) {clear_inputs();CHECK(emergency_reset());CHECK(!emergency_active());CHECK(!exit_door.open);}
+static void reset_ok(void) {clear_inputs();CHECK(emergency_reset());CHECK(!emergency_active());CHECK(exit_door.open);}
 int main(void) {
     setenv("TZ","UTC0",1);tzset();
     output_mutex=xSemaphoreCreateMutex();emergency_mutex=xSemaphoreCreateMutex();
@@ -51,7 +51,8 @@ int main(void) {
     buzzer_pattern(1,1,0);mock_time_ms=2000;emergency_poll();CHECK(atomic_load(&mock_ledc_duty[LEDC_CHANNEL_2])==512);
     door_open(&entry_door);CHECK(!entry_door.open);
     int recorded=inside_count();handle_scan(true,users[0].uid);CHECK(inside_count()==recorded&&users[0].inside);
-    CHECK(!record_room_motion(&room1,true));CHECK(master_room[0]==0);
+    CHECK(record_room_motion(&room1,true));CHECK(master_room[0]==1);
+    CHECK(record_room_motion(&room1,false));CHECK(master_room[0]==0);
     // Exit/room displays always show evacuation; entrance retains usable admin menu.
     char line1[17],line2[17];CHECK(emergency_display(LCD_EXIT,line1,line2));CHECK(strstr(line2,"NO RFID")!=NULL);
     CHECK(emergency_display(LCD_ROOM1,line1,line2));CHECK(strstr(line1,"EVACUATE")!=NULL);
@@ -73,13 +74,28 @@ int main(void) {
     CHECK(!emergency_reset());CHECK(exit_door.open);mock_time_ms++;
     // Failed reset persistence leaves the physical exit open.
     mock_commit_error=ESP_FAIL;CHECK(!emergency_reset());CHECK(emergency_active()&&exit_door.open);mock_commit_error=0;
-    CHECK(emergency_reset());CHECK(!emergency_active()&&!exit_door.open);
+    CHECK(emergency_reset());CHECK(!emergency_active()&&exit_door.open);
     CHECK(emergency_counts_uncertain()&&inside_count()==1&&users[0].inside);
     CHECK(atomic_load(&mock_ledc_duty[LEDC_CHANNEL_2])==0);
     emergency_service();
     // Post-alarm counts are explicitly unverified and not automatically zeroed.
     handle_scan(false,users[1].uid);CHECK(!users[1].inside);
-    CHECK(!record_room_motion(&room1,true));
+    CHECK(record_room_motion(&room1,true));
+    CHECK(record_room_motion(&room1,false));
+    // Alarm reset must not trap remaining occupants, including after closing.
+    master_room[0]=room1.count=1;CHECK(state_commit());
+    CHECK(record_room_motion(&room1,false));CHECK(room1.count==0&&inside_count()==1);
+    CHECK(emergency_counts_uncertain());schedule_check();door_update(&exit_door);
+    CHECK(exit_door.open&&!emergency_active());
+    CHECK(emergency_display(LCD_EXIT,line1,line2)&&strstr(line1,"BUILDING CLOSED"));
+    CHECK(strstr(line2,"EXIT OPEN"));
+    for(int id=0;id<LCD_COUNT;id++) {
+        lcd_render_lines(id,line1,line2);
+        CHECK(strstr(line1,"BUILDING CLOSED"));
+    }
+    clock_epoch=make_epoch(2026,10,29,12,0,0);
+    CHECK(emergency_display(LCD_EXIT,line1,line2)&&strstr(line1,"EXIT OPEN"));
+    clock_epoch=make_epoch(2026,10,29,22,0,0);
     admin_logged=false;CHECK(!emergency_reconcile_empty());CHECK(inside_count()==1);
     command("login 2026");CHECK(emergency_reconcile_empty());CHECK(inside_count()==0&&!emergency_counts_uncertain());emergency_service();
     // Button alone is sufficient; both sources are recorded when present.
@@ -108,7 +124,32 @@ int main(void) {
     mock_read_error=ESP_FAIL;emergency_init();CHECK(emergency_active()&&exit_door.open);mock_read_error=0;
     reset_ok();emergency_service();
     // Keypad reset uses the same authenticated, clear-input path.
-    set_inputs(true,false);emergency_poll();clear_inputs();menu_select(IT_EM_RESET);CHECK(!emergency_active()&&!exit_door.open);
+    set_inputs(true,false);emergency_poll();clear_inputs();menu_select(IT_EM_RESET);CHECK(!emergency_active()&&exit_door.open);
+
+    // Main menu changes without closing/reopening, preserving selected item.
+    menu_state=M_MAIN;menu_cursor=0;menu_build_items();
+    bool found=false;for(int i=0;i<menu_item_n;i++) if(menu_items[i]==IT_EMPTY) found=true;
+    CHECK(found);menu_select(IT_EMPTY);CHECK(menu_state==M_EMPTY_CONF);
+    menu_key('*');CHECK(menu_state==M_MAIN&&emergency_counts_uncertain());
+    admin_logged=false;menu_select(IT_EMPTY);CHECK(menu_state==M_MAIN);
+    command("login 2026");menu_select(IT_EMPTY);menu_key('#');
+    CHECK(!emergency_counts_uncertain()&&inside_count()==0&&!exit_door.open);
+    set_inputs(true,false);emergency_poll();menu_refresh_items();
+    found=false;for(int i=0;i<menu_item_n;i++) if(menu_items[i]==IT_EM_RESET) found=true;
+    CHECK(found);clear_inputs();CHECK(emergency_reset());menu_refresh_items();
+    found=false;for(int i=0;i<menu_item_n;i++) if(menu_items[i]==IT_EM_RESET) found=true;
+    CHECK(!found);admin_logged=false;menu_refresh_items();
+    CHECK(menu_items[menu_item_n-1]==IT_LOGIN);
+    // Events queued before reconciliation cannot reintroduce old movement.
+    command("login 2026");
+    atomic_store(&mock_gpio_input[room1.a.pin],1);room_capture_sample(0,&room1);
+    atomic_store(&mock_gpio_input[room1.b.pin],1);room_capture_sample(0,&room1);
+    CHECK(emergency_reconcile_empty());room_capture_process(&room1);CHECK(room1.count==0);
+    // Overflow is visible and invalidates occupancy instead of guessing order.
+    for(int i=0;i<ROOM_EVENTS+4;i++) {
+        atomic_store(&mock_gpio_input[room1.a.pin],i%2);room_capture_sample(0,&room1);
+    }
+    room_capture_process(&room1);CHECK(emergency_counts_uncertain());
     unlink(path);rmdir(dir);
     fprintf(stderr,"PASS: %d emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)\n",checks);
     return 0;

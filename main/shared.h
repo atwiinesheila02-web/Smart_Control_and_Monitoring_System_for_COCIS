@@ -450,6 +450,7 @@ void emergency_service(void);
 void occupancy_mark_uncertain(const char *reason);
 bool emergency_active(void);
 bool emergency_exit_required(void);
+bool exit_release_required(void);
 bool emergency_counts_uncertain(void);
 bool emergency_reset(void);
 bool emergency_reconcile_empty(void);
@@ -861,5 +862,11 @@ extern const int cfg_CLOSING_WARNING_MIN, cfg_CLOSING_BUZZ_MS, cfg_CLOSING_BEEP_
 #define CLOSING_BEEP_MS cfg_CLOSING_BEEP_MS
 
 #endif
+
+
+#define M_EMPTY_CONF 13
+#define IT_EMPTY 12
+void room_capture_task(void *arg);
+void room_capture_reset(void);
 
 #endif /* SMARTGUARD_SHARED_H */

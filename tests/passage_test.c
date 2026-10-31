@@ -52,7 +52,10 @@ int main(void){
     CHECK(!passage_begin(false,0)); // inside card cannot authorize an entry directly
     cycle(true);passage_poll();CHECK(!users[0].inside&&inside_count()==0&&checklist_status()==CHECKLIST_WAITING);
     room1.lights_on=false;room2.lights_on=false;room_lights[0]=room_lights[1]=false;heartbeat();mock_time_ms+=CHECKLIST_SETTLE_MS-1;checklist_poll();CHECK(checklist_status()==CHECKLIST_WAITING);mock_time_ms++;checklist_poll();CHECK(checklist_status()==CHECKLIST_CLEAR);
-    CHECK(strstr(lcds[LCD_EXIT].msg[0],"BUILDING CLEAR")!=NULL);
+    CHECK(strstr(lcds[LCD_EXIT].msg[0],"PASSAGE VERIFIED")!=NULL);
+    exit_reader.available=true; entrance_idle_refresh();
+    CHECK(strstr(lcds[LCD_EXIT].idle[0],"EXIT")!=NULL);
+    CHECK(strstr(lcds[LCD_EXIT].idle[1],"Scan your card")!=NULL);
     // A lit room or stale/offline room must not pass the checklist.
     room1.lights_on=true;checklist_run();CHECK(checklist_status()==CHECKLIST_REQUIRED);CHECK(strstr(checklist_summary(),"Lights"));
     room1.lights_on=false;room_seen_ms[1]=mock_time_ms-(uint32_t)ROOM_OFFLINE_MS-1;checklist_run();CHECK(checklist_status()==CHECKLIST_REQUIRED);CHECK(strstr(checklist_summary(),"offline"));
@@ -66,10 +69,21 @@ int main(void){
     // Two complete cycles in one authorization are ambiguous, not two people counted.
     approve(false,1);cycle(false);cycle(false);passage_poll();CHECK(!users[1].inside&&users[0].inside&&emergency_counts_uncertain());
     CHECK(!passage_waiting(false));checklist_run();CHECK(checklist_status()==CHECKLIST_REQUIRED);recover_empty();
-    // Passage without an authorization window flags uncertainty rather than guessing identity.
-    cycle(true);passage_poll();CHECK(emergency_counts_uncertain()&&inside_count()==0);recover_empty();
+    // Idle sensor presses cannot release either door or alter accounting.
+    for (int direction=0;direction<2;direction++) {
+        stable(direction!=0,true);passage_poll();door_update(&entry_door);door_update(&exit_door);
+        CHECK(!entry_door.open&&!exit_door.open&&!emergency_counts_uncertain());
+        stable(direction!=0,false);passage_poll();door_update(&entry_door);door_update(&exit_door);
+        CHECK(!entry_door.open&&!exit_door.open&&!emergency_counts_uncertain()&&inside_count()==0);
+        CHECK(!passage_waiting(false)&&!passage_waiting(true));
+    }
+    // A recorded occupant also still needs a card to authorize exit.
+    approve(false,0);cycle(false);passage_poll();CHECK(users[0].inside);
+    cycle(true);passage_poll();door_update(&exit_door);
+    CHECK(users[0].inside&&inside_count()==1&&!exit_door.open&&!emergency_counts_uncertain());
+    approve(true,0);cycle(true);passage_poll();CHECK(!users[0].inside);
     // A beam already blocked cannot be used to approve a card.
-    stable(false,true);approve(false,0);CHECK(!passage_waiting(false)&&!users[0].inside);stable(false,false);passage_poll();CHECK(emergency_counts_uncertain());recover_empty();
+    stable(false,true);approve(false,0);CHECK(!passage_waiting(false)&&!users[0].inside);stable(false,false);passage_poll();CHECK(!emergency_counts_uncertain()&&!entry_door.open&&!exit_door.open);
     // Schedule changes cancel a no-passage window without changing counts.
     approve(false,0);CHECK(passage_waiting(false));sched_close_min=11*60;CHECK(config_save());CHECK(!passage_waiting(false)&&!users[0].inside&&!emergency_counts_uncertain());
     sched_close_min=21*60;CHECK(config_save());

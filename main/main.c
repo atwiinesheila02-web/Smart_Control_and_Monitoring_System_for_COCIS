@@ -220,6 +220,8 @@
 #define IT_CLOSE   9
 #define IT_EM_RESET     10
 #define IT_LOGOUT  11
+#define IT_EMPTY 12
+#define M_EMPTY_CONF 13
 
 
 #define SMARTGUARD_MAIN
@@ -557,6 +559,7 @@ static void start_tasks(void)
     ESP_ERROR_CHECK(xTaskCreate(storage_task, "storage", 8192, NULL, 1, NULL) == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
     ESP_ERROR_CHECK(xTaskCreate(keypad_task, "keypad", 3072, NULL, 2, NULL) == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
     ESP_ERROR_CHECK(xTaskCreate(entrance_terminal, "T_ENTRANCE", 12288, NULL, 2, NULL) == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
+    ESP_ERROR_CHECK(xTaskCreate(room_capture_task, "room_inputs", 3072, NULL, 3, NULL) == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
     ESP_ERROR_CHECK(xTaskCreate(room_terminal, "T_ROOM1", 5120, &room1, 2, NULL) == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
     ESP_ERROR_CHECK(xTaskCreate(room_terminal, "T_ROOM2", 5120, &room2, 2, NULL) == pdPASS ? ESP_OK : ESP_ERR_NO_MEM);
 }

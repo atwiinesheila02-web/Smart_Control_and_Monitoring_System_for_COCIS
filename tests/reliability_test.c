@@ -37,6 +37,16 @@ static void *move_people(void *arg) {
     }
     return NULL;
 }
+static void *capture_exit(void *unused) {
+    (void)unused;
+    atomic_store(&mock_gpio_input[room1.b.pin],1);room_capture_sample(0,&room1);
+    mock_time_ms+=100;
+    atomic_store(&mock_gpio_input[room1.a.pin],1);room_capture_sample(0,&room1);
+    mock_time_ms+=100;
+    atomic_store(&mock_gpio_input[room1.a.pin],0);
+    atomic_store(&mock_gpio_input[room1.b.pin],0);room_capture_sample(0,&room1);
+    return NULL;
+}
 int main(void) {
     setenv("TZ", "UTC0", 1); tzset();
     output_mutex=xSemaphoreCreateMutex();emergency_mutex=xSemaphoreCreateMutex();
@@ -61,9 +71,18 @@ int main(void) {
     uint8_t unknown[4]={9,9,9,9};scan(false,unknown);CHECK(inside_count()==1);
     CHECK(record_room_motion(&room1,true));CHECK(room1.count==1&&master_room[0]==1&&corridor_count()==0);
     CHECK(!record_room_motion(&room2,true));CHECK(room2.count==0);
+    // Capture keeps running on another thread while state is locked. Replay
+    // uses event times even when processing occurs after the sequence timeout.
+    state_lock();pthread_t capture_thread;
+    CHECK(!pthread_create(&capture_thread,NULL,capture_exit,NULL));
+    pthread_join(capture_thread,NULL);CHECK(room1.count==1);
+    mock_time_ms+=SEQ_TIMEOUT_MS+1000;room_capture_process(&room1);
+    CHECK(room1.count==0&&room1.seq==RS_IDLE&&inside_count()==1);
+    state_unlock();CHECK(record_room_motion(&room1,true));
+
     scan(true,card_a);CHECK(users[a].inside&&inside_count()==1&&state_healthy());
     CHECK(master_room[0]==1&&room1.count==1&&!exit_door.open&&!passage_waiting(true));
-    CHECK(strstr(lcds[LCD_EXIT].msg[1],"Leave room first")!=NULL);
+    CHECK(strstr(lcds[LCD_EXIT].msg[1],"Room exit needed")!=NULL);
     CHECK(!passage_begin(true,a)); // direct callers cannot bypass the room-exit rule
     CHECK(state_init());CHECK(users[a].inside&&master_room[0]==1);
     // Inner then outer means room exit; building occupancy remains one.
@@ -194,17 +213,26 @@ int main(void) {
     clock_epoch=make_epoch(2026,10,30,20,50,0);
     for(int i=0;i<LCD_COUNT;i++) {
         lcds[i].msg_active=false;
-        lcd_idle(i,"BUILDING CLOSED","");
+        lcd_idle(i,"ROOM STATUS","People:1 50lux");
         lcd_render_lines(i,screen1,screen2);
-        CHECK(strncmp(screen1,"BUILDING CLOSING",15)==0);
-        CHECK(strncmp(screen2,"IN 10 MINUTES",13)==0);
+        if(i == LCD_ENTRY || i == LCD_EXIT) {
+            CHECK(strncmp(screen1,"BUILDING CLOSING",15)==0);
+            CHECK(strncmp(screen2,"IN 10 MINUTES",13)==0);
+        } else {
+            CHECK(strncmp(screen1,"ROOM STATUS",11)==0);
+            CHECK(strncmp(screen2,"People:1 50lux",14)==0);
+        }
     }
     clock_epoch=make_epoch(2026,10,30,20,51,0);
-    lcd_render_lines(LCD_ROOM1,screen1,screen2);CHECK(strncmp(screen2,"IN 9 MINUTES",12)==0);
+    lcd_render_lines(LCD_EXIT,screen1,screen2);CHECK(strncmp(screen2,"IN 9 MINUTES",12)==0);
     lcd_msg(LCD_ENTRY,"ACCESS APPROVED","Pass through");
     lcd_render_lines(LCD_ENTRY,screen1,screen2);CHECK(strncmp(screen1,"ACCESS APPROVED",15)==0);
     mock_time_ms+=LCD_MSG_MS+1;
     lcd_render_lines(LCD_ENTRY,screen1,screen2);CHECK(strncmp(screen1,"BUILDING CLOSING",15)==0);
+    lcd_msg(LCD_EXIT,"PASSAGE VERIFIED","Card A");
+    lcd_render_lines(LCD_EXIT,screen1,screen2);CHECK(strncmp(screen1,"PASSAGE VERIFIED",16)==0);
+    mock_time_ms+=LCD_MSG_MS+1;
+    lcd_render_lines(LCD_EXIT,screen1,screen2);CHECK(strncmp(screen1,"BUILDING CLOSING",15)==0);
     clock_epoch=make_epoch(2026,10,30,20,59,0);
     lcd_render_lines(LCD_EXIT,screen1,screen2);CHECK(strncmp(screen2,"IN 1 MINUTE",11)==0);
     clock_epoch=make_epoch(2026,10,30,21,0,0);

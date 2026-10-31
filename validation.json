@@ -1,21 +1,21 @@
 {
   "native_syntax_check": "all 5 C files pass with mocked SDK declarations",
   "test_results": [
-    "PASS: 136 production-code reliability assertions; 435 checkpoint commits; 400 concurrent room transitions",
-    "PASS: 83 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
-    "PASS: 83 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)",
+    "PASS: 142 production-code reliability assertions; 437 checkpoint commits; 400 concurrent room transitions",
+    "PASS: 110 emergency assertions (independent smoke/button triggers, guarded outputs, latching, persistence, reset and reconciliation)",
+    "PASS: 91 verified-passage/checklist assertions (debounce, no-pass timeout, confirmation, reservation, faults, recovery and emergency priority)",
     "PASS: 13 RFID integration assertions (offline exit retry, SPI handle reuse, entry scan, exit scan and verified exit)"
   ],
   "native_sanitizers": "ASan/UBSan enabled and passed",
-  "full_esp_idf_build": "PASS: ESP-IDF v6.0.2 ESP32-S3 build-current after pull conflict resolution",
-  "wokwi_run": "Previous audited firmware passed six live scenarios; live Wokwi scenarios were not rerun after this merge",
+  "full_esp_idf_build": "PASS: ESP-IDF v6.0.2 ESP32-S3 build-current including idle passage sensor authorization fix",
+  "wokwi_run": "Previous live evidence applies to older firmware; current four fixes have not been rerun in Wokwi",
   "wokwi_fixture_note": "tests/wokwi/room-input-fixture.json substitutes pushbuttons and pull-downs for the two Room 2 PIR outputs to drive the actual firmware GPIO inputs. Original diagram unchanged. Run with --diagram-file and --scenario tests/wokwi/room-sequence.yaml.",
-  "firmware_sha256": "8d10e642df53866b85fa65e2ee0bcbf994094d821d75556f799fda1fd7ffa496",
+  "firmware_sha256": "c2d9a325b7c77aa625421cd254be902117b57250315642e3d545369d698cabc4",
   "lighting_live_test": "PASS: both rooms at 20 lux ON / 500 lux OFF; control pins, connected ON contacts and actual lamp screenshots inspected",
   "lighting_evidence": "tests/wokwi/lighting.yaml; tests/wokwi/lighting.log; tests/wokwi/dark-lamp.png; tests/wokwi/bright-lamp.png",
   "lighting_firmware_sha256": "d7f82649c8f6c203123042a9925aa676dbe9f941353970342572b5647b010cdc",
-  "audit_status": "PASS: post-pull sanitized native tests and target build; previous full audit/live evidence retained separately",
-  "native_source_sha256": "9d1db741c7d7915d6f4e41f9f269d61f5b18cf30dd5b6513cc16837225628ad8",
+  "audit_status": "PASS: 352 sanitized native assertions, single-file target syntax and full ESP32 build; current browser simulation not run",
+  "native_source_sha256": "7f02f7947551c23d2db83c907d113b137cc3ad308ba132b6bef515ab828c931c",
   "audited_source_sha256": "f2f7db8475b3399e65969a7e0d82df07fbe26761aec838cbab492fc87d887b92",
   "live_results": "tests/wokwi/audit/live-results.json",
   "buzzer_waveform": {
@@ -32,5 +32,6 @@
     "Live room sequence uses a test GPIO fixture; original PIR user-interface motion controls were not automated."
   ],
   "merge_status": "PASS: resolved README/access conflicts with origin/main 3d418215935aa30c107b7699c658dcb5fa1ddee1; retained local behavior and incoming building-count helper/emergency-menu cleanup",
-  "previous_live_firmware_sha256": "d8bdeb353066af7e06bae1be937c408e4f9338207dbb20d1850e76180d291d7a"
+  "previous_live_firmware_sha256": "d8bdeb353066af7e06bae1be937c408e4f9338207dbb20d1850e76180d291d7a",
+  "wokwi_upload_sha256": "b8cb8a748c167066b49ddef75d2bb458ad73e66081b026a4696cc17bd38bfbe5"
 }

@@ -98,7 +98,7 @@ static void close_locked(door_t *door)
 void door_open(door_t *door)
 {
     xSemaphoreTake(output_mutex, portMAX_DELAY);
-    if (emergency_exit_required()) {
+    if (exit_release_required()) {
         if (door == &exit_door) hold_exit_locked();
         else close_locked(door);
     } else {
@@ -114,7 +114,7 @@ void door_open(door_t *door)
 void door_close(door_t *door)
 {
     xSemaphoreTake(output_mutex, portMAX_DELAY);
-    if (door == &exit_door && emergency_exit_required()) hold_exit_locked();
+    if (door == &exit_door && exit_release_required()) hold_exit_locked();
     else close_locked(door);
     xSemaphoreGive(output_mutex);
 }
@@ -122,7 +122,7 @@ void door_close(door_t *door)
 void door_update(door_t *door)
 {
     xSemaphoreTake(output_mutex, portMAX_DELAY);
-    if (emergency_exit_required()) {
+    if (exit_release_required()) {
         if (door == &exit_door) hold_exit_locked();
         else close_locked(door);
     } else if (door->open && esp_timer_get_time() >= door->close_at_us) close_locked(door);
@@ -291,7 +291,7 @@ bool passage_begin(bool is_exit, int ui)
     /* Only a corridor occupant can reserve a normal building exit. Room PIR
        inner->outer must return occupants to the corridor first. */
     if (is_exit && corridor_count() <= passage_reserved_exits()) {
-        lcd_msg(LCD_EXIT, "ACCESS DENIED", "Leave room first"); return false;
+        lcd_msg(LCD_EXIT, "EXIT PENDING", "Room exit needed"); return false;
     }
     if (gates[i].active || passage_user_pending(ui)) {
         lcd_msg(i ? LCD_EXIT : LCD_ENTRY, "ACCESS DENIED", ""); return false;
@@ -360,8 +360,12 @@ void passage_poll(void)
         if (new_cycle) seen[i] = completed;
         if (!gates[i].active) {
             if (new_cycle) {
-                occupancy_mark_uncertain("passage without an authorized card window");
-                checklist_invalidate();
+                /* A sensor reports obstruction, not permission or proof that
+                   anyone crossed a closed door. Idle test presses must never
+                   trigger evacuation release or change occupancy. Ambiguous
+                   activity during an approved window is handled below. */
+                printf("%s: sensor cycle ignored (no approved card window)\n", i ? "EXIT" : "ENTRY");
+                log_event(F_SYSTEM, "WARN,%s sensor cycle without card approval ignored", i ? "EXIT" : "ENTRY");
             }
             continue;
         }

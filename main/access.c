@@ -395,8 +395,8 @@ void entrance_idle_refresh(void)
     else if (!exit_reader.available) lcd_idle(LCD_EXIT, "ERROR", "Reader offline");
     else if (open_now)          lcd_idle(LCD_EXIT, "EXIT", "Scan your card");
     else                        lcd_idle(LCD_EXIT, "BUILDING CLOSED", "");
-    if (checklist_status() >= CHECKLIST_CLEAR)
-        lcd_idle(LCD_EXIT, checklist_status() == CHECKLIST_CLEAR ? "BUILDING CLEAR" : "CHECK REQUIRED", checklist_summary());
+    if (checklist_status() == CHECKLIST_REQUIRED)
+        lcd_idle(LCD_EXIT, "CHECK REQUIRED", checklist_summary());
 }
 
 static void deny_access(int lcd_id, const char *point, const char *uidtxt,
@@ -406,6 +406,7 @@ static void deny_access(int lcd_id, const char *point, const char *uidtxt,
     if (!strcmp(line2, "Card not registered")) lcd_msg(lcd_id, "Card not", "registered");
     else if (!strcmp(line2, "Card already used")) lcd_msg(lcd_id, "Card already", "used");
     else if (!strcmp(line2, "No entrance recorded")) lcd_msg(lcd_id, "No entrance", "recorded");
+    else if (!strcmp(line2, "Leave room first")) lcd_msg(lcd_id, "EXIT PENDING", "Room exit needed");
     else lcd_msg(lcd_id, "ACCESS DENIED", line2);
     buzzer_pattern(1, DENIED_MS, 0);
     printf("%s: ACCESS DENIED (%s) uid=%s\n", point, line2, uidtxt);
@@ -421,8 +422,8 @@ static void grant_access(bool is_exit, int ui, const char *uidtxt, const char *d
 
 void handle_scan(bool is_exit, const uint8_t *uid)
 {
-    if (emergency_exit_required()) {
-        printf("EMERGENCY: %s; no RFID accounting; occupancy UNVERIFIED\n",
+    if (exit_release_required()) {
+        printf("EGRESS: %s; no RFID accounting; occupancy UNVERIFIED\n",
                is_exit ? "exit is held open" : "use the designated exit");
         return;
     }
@@ -465,8 +466,8 @@ void handle_scan(bool is_exit, const uint8_t *uid)
         else if (users[ui].inside)     deny_access(lcd_id, point, uidtxt, name, "Card already used");
         else                           grant_access(false, ui, uidtxt, "");
     } else {
-        if (!open_now)      deny_access(lcd_id, point, uidtxt, name, "Building closed");
-        else if (!users[ui].inside)           deny_access(lcd_id, point, uidtxt, name, "No entrance recorded");
+        if (!open_now) deny_access(lcd_id, point, uidtxt, name, "Building closed");
+        else if (!users[ui].inside) deny_access(lcd_id, point, uidtxt, name, "No entrance recorded");
         else if (corridor_count() <= passage_reserved_exits())
             deny_access(lcd_id, point, uidtxt, name, "Leave room first");
         else grant_access(true, ui, uidtxt, "");
@@ -520,8 +521,8 @@ static void closing_warning_check(bool open_now)
     buzzer_closing_warning();
     char countdown[17];
     snprintf(countdown, sizeof(countdown), "IN %d MINUTE%s", remaining, remaining == 1 ? "" : "S");
-    for (int i = 0; i < LCD_COUNT; i++)
-        lcd_msg(i, "BUILDING CLOSING", countdown);
+    lcd_msg(LCD_ENTRY, "BUILDING CLOSING", countdown);
+    lcd_msg(LCD_EXIT, "BUILDING CLOSING", countdown);
     printf("CLOSING WARNING: %d minute(s) remaining; %d inside\n", remaining, inside_count());
     log_event(F_SYSTEM, "WARN,closing in %d minute(s),%d inside", remaining, inside_count());
 }
@@ -556,13 +557,12 @@ void schedule_check(void)
 bool record_room_motion(room_t *room, bool entering)
 {
     state_lock();
-    if (emergency_exit_required() || emergency_counts_uncertain()) {
-        state_unlock();
-        return false; /* PIR events during evacuation cannot verify who escaped. */
-    }
+    /* PIRs observe movement; there are no room locks to prevent entry.
+       During recovery both directions remain estimates until reconciliation. */
     int idx = room->term_id - TERM_ROOM1;
     bool allowed = idx >= 0 && idx < 2 && state_healthy() &&
-        (entering ? corridor_count() > passage_reserved_exits() : master_room[idx] > 0);
+        (entering ? (emergency_counts_uncertain() ? master_room[idx] < MAX_USERS :
+                    corridor_count() > passage_reserved_exits()) : master_room[idx] > 0);
     if (allowed) {
         master_room[idx] += entering ? 1 : -1;
         allowed = state_commit();
@@ -1082,12 +1082,22 @@ static void menu_build_items(void)
         menu_items[menu_item_n++] = IT_OPEN;
         menu_items[menu_item_n++] = IT_CLOSE;
         if (emergency_active()) menu_items[menu_item_n++] = IT_EM_RESET;
+        else if (emergency_counts_uncertain()) menu_items[menu_item_n++] = IT_EMPTY;
         menu_items[menu_item_n++] = IT_LOGOUT;
     } else {
         menu_items[menu_item_n++] = IT_LOGIN;
     }
     if (menu_cursor >= menu_item_n) menu_cursor = menu_item_n - 1;
     if (menu_cursor < 0) menu_cursor = 0;
+}
+
+static void menu_refresh_items(void)
+{
+    if (menu_state != M_MAIN) return;
+    int old = menu_item_n > 0 ? menu_items[menu_cursor] : -1;
+    menu_build_items();
+    for (int i = 0; i < menu_item_n; i++)
+        if (menu_items[i] == old) { menu_cursor = i; break; }
 }
 
 static const char *item_label(int it)
@@ -1104,6 +1114,7 @@ static const char *item_label(int it)
     case IT_OPEN:   return "Open time";
     case IT_CLOSE:  return "Close time";
     case IT_EM_RESET:    return "Emergency reset";
+    case IT_EMPTY: return "Confirm empty";
     case IT_LOGOUT: return "Logout";
     }
     return "";
@@ -1261,6 +1272,11 @@ static void menu_render(void)
         }
         break;
 
+    case M_EMPTY_CONF:
+        snprintf(l1, sizeof(l1), "Checked EMPTY?");
+        snprintf(l2, sizeof(l2), "#=yes  *=cancel");
+        break;
+
     case M_DEL_CONF:
         snprintf(l1, sizeof(l1), "Delete user?");
         snprintf(l2, sizeof(l2), "#=yes  *=no");
@@ -1287,7 +1303,7 @@ static void menu_select(int it)
 {
 
     bool admin_item = (it == IT_LOG || it == IT_REG || it == IT_DEL || it == IT_OPEN ||
-                       it == IT_CLOSE || it == IT_EM_RESET || it == IT_LOGOUT);
+                       it == IT_CLOSE || it == IT_EM_RESET || it == IT_EMPTY || it == IT_LOGOUT);
     if (admin_item) {
         if (!admin_active()) {
             lcd_msg(LCD_ENTRY, "SESSION EXPIRED", "Log in again");
@@ -1354,6 +1370,11 @@ static void menu_select(int it)
 
     case IT_EM_RESET:
         emergency_reset();
+        menu_back_to_main();
+        break;
+
+    case IT_EMPTY:
+        menu_state = M_EMPTY_CONF;
         break;
 
     case IT_LOGOUT:
@@ -1453,6 +1474,7 @@ void menu_key(char k)
         return;
     }
 
+    menu_refresh_items();
     menu_last_key_ms = now_ms();
     menu_dirty = true;
 
@@ -1547,6 +1569,14 @@ void menu_key(char k)
         }
         break;
 
+    case M_EMPTY_CONF:
+        if (k == '#') {
+            bool ok = emergency_reconcile_empty();
+            lcd_msg(LCD_ENTRY, ok ? "COUNTS RESET" : "CHECK REQUIRED", ok ? "Building empty" : "Check status");
+            menu_back_to_main();
+        } else if (k == '*') menu_back_to_main();
+        break;
+
     case M_DEL_CONF:
         if (k == '#') {
             if (!admin_active()) {
@@ -1581,6 +1611,7 @@ void menu_tick(void)
 {
     if (menu_state == M_IDLE) return;
 
+    menu_refresh_items();
     uint32_t now = now_ms();
 
     if (now - menu_last_key_ms > (uint32_t)MENU_TIMEOUT_MS) {
